@@ -23,7 +23,6 @@ import java.util.Optional;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final PostLikeRepository postLikeRepository;
     private final CommentRepository commentRepository;
 
     @Transactional(readOnly = true)
@@ -58,5 +57,11 @@ public class PostService {
         } else {
             throw new IllegalArgumentException("게시글을 찾을 수 없습니다.");
         }
+    }
+
+    @Transactional
+    public void createPost(String title, String content, User author) {
+        Post post = new Post(title, content, author);
+        postRepository.saveAndFlush(post);
     }
 }
