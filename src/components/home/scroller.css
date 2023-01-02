@@ -1,0 +1,49 @@
+.media-group {
+  display: grid;
+  gap: var(--size-3);
+  grid-auto-flow: column;
+  grid-auto-columns: 20%;
+  overflow-x: scroll;
+  overscroll-behavior-inline: contain;
+}
+
+.media-group::-webkit-scrollbar {
+  display: none;
+}
+
+.media-element {
+  display: grid;
+  grid-template-rows: min-content;
+  gap: var(--size-2);
+  padding: var(--size-3);
+  background: var(--surface-2);
+  background-color: rgba(0, 0, 0, 0.963);
+  border-radius: 5px;
+}
+
+.media-element > img {
+  inline-size: 100%;
+  aspect-ratio: 8 / 12;
+}
+
+.media-element > img {
+  inline-size: 100%;
+  object-fit: cover;
+  border-radius: 5px;
+  transition: 500ms;
+}
+
+.media-element > img:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+/* always aligns the element at the front edge */
+.snaps-inline {
+  scroll-snap-type: inline mandatory; /* inline has to come before mandatory or it won't work */
+}
+
+.snaps-inline > * {
+  scroll-snap-align: start;
+  scroll-padding-inline: 1rem;
+}
