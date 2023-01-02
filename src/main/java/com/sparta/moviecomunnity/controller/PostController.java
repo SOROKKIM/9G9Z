@@ -20,4 +20,10 @@ public class PostController {
     public List<PostResponseDto> getAllPostByCreatedTimeAsc() {
         return postService.getAllPostByCreatedAtAsc();
     }
+
+    @GetMapping("/{id}")
+    @ResponseBody
+    public PostResponseDto getPostByPostId(@PathVariable Long id) {
+        return postService.getPostByPostId(id);
+    }
 }

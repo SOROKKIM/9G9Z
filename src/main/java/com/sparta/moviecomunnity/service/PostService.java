@@ -40,4 +40,23 @@ public class PostService {
 
         return responseDtos;
     }
+
+    @Transactional(readOnly = true)
+    public PostResponseDto getPostByPostId(long id) {
+        Optional<Post> foundPost = postRepository.findPostById(id);
+        if (foundPost.isPresent()) {
+            Post post = foundPost.get();
+            User author = post.getAuthor();
+            List<Comment> comments = commentRepository.findCommentsByPostId(post.getId());
+            List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
+            for (Comment comment : comments) {
+                CommentResponseDto singleComment = new CommentResponseDto(comment.getId(), comment.getContent());
+                commentResponseDtos.add(singleComment);
+            }
+
+            return new PostResponseDto(post, author.getUsername(), commentResponseDtos);
+        } else {
+            throw new IllegalArgumentException("게시글을 찾을 수 없습니다.");
+        }
+    }
 }
