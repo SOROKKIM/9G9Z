@@ -77,4 +77,20 @@ public class PostController {
 
         return new ResponseDto("게시글을 성공적으로 수정하였습니다.");
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseBody
+    public ResponseDto deletePost(@PathVariable long id) {
+        // 올바른 회원인지 검증
+
+
+        // 게시글 삭제
+        try {
+            postService.deletePost(id);
+        } catch (IllegalArgumentException e) {
+            return new ResponseDtoWithStatusCode(400, "게시글 삭제에 실패했습니다. 게시글을 찾을 수 없습니다.");
+        }
+
+        return new ResponseDto("게시글을 성공적으로 삭제하였습니다.");
+    }
 }

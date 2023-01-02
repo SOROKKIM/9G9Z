@@ -1,14 +1,9 @@
 package com.sparta.moviecomunnity.service;
 
-import com.sparta.moviecomunnity.dto.CommentResponseDto;
 import com.sparta.moviecomunnity.dto.PostResponseDto;
-import com.sparta.moviecomunnity.entity.Comment;
 import com.sparta.moviecomunnity.entity.Post;
-import com.sparta.moviecomunnity.entity.PostLike;
-import com.sparta.moviecomunnity.entity.User;
-import com.sparta.moviecomunnity.repository.CommentRepository;
-import com.sparta.moviecomunnity.repository.PostLikeRepository;
 import com.sparta.moviecomunnity.repository.PostRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -72,6 +67,17 @@ public class PostService {
             Post post = foundPost.get();
             post.rewrite(title, content);
             postRepository.saveAndFlush(post);
+        } else {
+            throw new IllegalArgumentException("게시글을 찾을 수 없습니다.");
+        }
+    }
+
+    @Transactional
+    public void deletePost(long id) {
+        Optional<Post> foundPost = postRepository.findPostById(id);
+        if (foundPost.isPresent()) {
+            Post post = foundPost.get();
+            postRepository.delete(post);
         } else {
             throw new IllegalArgumentException("게시글을 찾을 수 없습니다.");
         }
