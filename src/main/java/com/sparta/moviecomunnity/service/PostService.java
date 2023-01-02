@@ -64,4 +64,16 @@ public class PostService {
         Post post = new Post(title, content, author);
         postRepository.saveAndFlush(post);
     }
+
+    @Transactional
+    public void rewritePost(long id, String title, String content) {
+        Optional<Post> foundPost = postRepository.findPostById(id);
+        if (foundPost.isPresent()) {
+            Post post = foundPost.get();
+            post.rewrite(title, content);
+            postRepository.saveAndFlush(post);
+        } else {
+            throw new IllegalArgumentException("게시글을 찾을 수 없습니다.");
+        }
+    }
 }

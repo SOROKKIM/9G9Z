@@ -52,4 +52,29 @@ public class PostController {
         postService.createPost(title, content, author);
         return new ResponseDto("게시글을 성공적으로 작성하였습니다.");
     }
+
+    @PutMapping("/{id}")
+    @ResponseBody
+    public ResponseDto rewritePost(@PathVariable long id, @RequestBody PostRequestDto requestDto, HttpServletRequest request) {
+
+        // 올바른 회원인지 검증
+
+
+        // 게시글 수정
+        String title = requestDto.getTitle();
+        String content = requestDto.getContent();
+        if (title.trim().equals("")) {
+            return new ResponseDtoWithStatusCode(400, "게시글 수정에 실패했습니다. 제목이 비어있습니다.");
+        } else if (content.trim().equals("")) {
+            return new ResponseDtoWithStatusCode(400, "게시글 수정에 실패했습니다. 내용이 비어있습니다.");
+        }
+
+        try {
+            postService.rewritePost(id, title, content);
+        } catch (IllegalArgumentException e) {
+            return new ResponseDtoWithStatusCode(400, "게시글 수정에 실패했습니다. 게시글을 찾을 수 없습니다.");
+        }
+
+        return new ResponseDto("게시글을 성공적으로 수정하였습니다.");
+    }
 }
