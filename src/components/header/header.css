@@ -67,6 +67,7 @@
   color: white;
   font-weight: bold;
   text-decoration: none;
+  font-size: 15px;
 }
 
 .nav-button {
@@ -79,4 +80,32 @@
 
 .nav-button:hover {
   background-color: rgb(40, 40, 40);
+}
+
+#profile-button:hover #profile-submenu {
+  display: block;
+}
+
+#profile-submenu {
+  display: none;
+  position: absolute;
+  background-color: rgba(51, 50, 50, 0.963);
+  margin-top: 15px;
+  margin-left: -20px;
+  margin-right: 10px;
+  border-radius: 10px;
+  height: 130px;
+  width: 8.6%;
+  padding-top: 10px;
+}
+
+#profile-submenu a {
+  display: grid;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+#profile-submenu a:hover {
+  background-color: rgba(104, 104, 104, 0.963);
+  border-radius: 5px;
 }

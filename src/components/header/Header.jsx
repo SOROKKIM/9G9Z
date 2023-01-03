@@ -2,6 +2,17 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 function Header() {
+
+  // function openSubmenu(event) {
+  //   event.preventDefault();
+  //   var x = document.getElementById("profile-submenu");
+  //   if (x.style.display === "none") {
+  //     x.style.display = "block";
+  //   } else {
+  //     x.style.display = "none";
+  //   }
+  // }
+
   return (
     <div className="header">
       <div>
@@ -14,10 +25,16 @@ function Header() {
         </form>
       </div>
       <div className="navbar">
-          <Link to="/reviews" className="nav-button">REVIEWS</Link>
-          <Link to="/signin" className="nav-button">LOGIN</Link>
-          <Link to="/signup" className="nav-button">SIGNUP</Link>
-          <div className="nav-button"><i class="fa-regular fa-user"></i></div>
+        <Link to="/" className="nav-button">ABOUT US</Link>
+        <Link to="/reviews" className="nav-button">REVIEW LIST</Link>
+        <Link to="/writereview" className="nav-button">REVIEW</Link>
+        <a href="" id="profile-button" className="nav-button"><i class="fa-regular fa-user"></i>
+          <div id="profile-submenu">
+            <Link to="/signin">Login</Link>
+            <Link to="/signup">Sign Up</Link>
+            <Link>Blah Blah</Link>
+          </div>
+        </a>
       </div>
     </div>
 

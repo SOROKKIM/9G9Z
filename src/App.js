@@ -1,15 +1,34 @@
 import './App.css';
-import { Route, Routes, Link } from 'react-router';
+import { Route, Routes } from 'react-router';
 import Home from './pages/Home';
 import WriteReview from './pages/WriteReview';
-import Header from './components/header/Header';
 import SignUp from './pages/SignUp';
 import ReviewList from './pages/ReviewList';
 import Login from './pages/Login';
 
 function App() {
 
-  const test = [];
+  const testMovieInfo = [
+    {
+      title: "Teenage Mutant Ninja Turtles",
+      yearOfMovie: 2022,
+      movieDescription: "Shit movie",
+      actors: {
+        Diego : "John Smith",
+        Turtle2 : "Joe Mama",
+        Turtle3 : "Joshua Krap",
+        BadGuy1 : "Chimpanzee"
+      },
+      posterImageSrc : "www.google.com",
+    }
+  ];
+  
+  const userInfo = [
+    {
+      username : "hwane94",
+      password : "1234"
+    }
+  ]
 
   return (
     <div>
