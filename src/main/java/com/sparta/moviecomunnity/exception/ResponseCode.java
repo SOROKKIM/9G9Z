@@ -8,7 +8,27 @@ import static org.springframework.http.HttpStatus.*;
 
 @Getter
 @AllArgsConstructor
-public enum ErrorCode {
+public enum ResponseCode {
+    /* 200 OK : 성공 */
+    // 회원가입 성공
+    SUCCESS_SIGNUP(OK, "회원가입이 완료되었습니다."),
+
+    // 로그인 성공
+    SUCCESS_SIGNIN(OK, "로그인이 완료되었습니다."),
+
+    // 게시글 및 댓글 포스팅 성공
+    SUCCESS_CREATE(OK, "성공적으로 작성하였습니다."),
+
+    // 게시글 및 댓글 수정 성공
+    SUCCESS_EDIT(OK, "수정이 완료되었습니다."),
+
+    // 게시글 및 댓글 삭제 성공
+    SUCCESS_DELETE(OK, "성공적으로 삭제하였습니다."),
+
+    // 좋아요 기능 성공
+    SUCCESS_LIKE(OK,"좋아요 하였습니다."),
+    SUCCESS_DELETE_LIKE(OK, "좋아요를 취소하였습니다."),
+
     /* 400 BAD_REQUEST : 잘못된 요청 */
 
     // 토큰이 필요한 API 요청에서 토큰을 전달하지 않았거나 정상 토큰이 아닐 때
@@ -25,9 +45,11 @@ public enum ErrorCode {
 
     // DB에 이미 존재하는 username으로 회원가입을 요청한 경우
     DUPLICATE_RESOURCE(BAD_REQUEST, "중복된 username 입니다."),
-    // 리소스를 찾을 수 없을 때
+    // 리소스를 찾을 수 없는 경우
     RESOURCE_NOT_FOUND(BAD_REQUEST, "리소스를 찾을 수 없습니다."),
+    // 게시글 제목에 빈 칸을 입력한 경우
     INVALID_POST_TITLE(BAD_REQUEST, "제목에 빈 칸을 입력할 수 없습니다."),
+    // 게시글 내용에 빈 칸을 입력한 경우
     INVALID_POST_CONTENT(BAD_REQUEST, "내용에 빈 칸을 입력할 수 없습니다.")
     ;
 
