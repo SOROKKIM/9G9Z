@@ -2,8 +2,10 @@ package com.sparta.moviecomunnity.service;
 
 import com.sparta.moviecomunnity.dto.CommentResponseDto;
 import com.sparta.moviecomunnity.dto.PostResponseDto;
+import com.sparta.moviecomunnity.entity.Comment;
 import com.sparta.moviecomunnity.entity.Post;
 import com.sparta.moviecomunnity.entity.User;
+import com.sparta.moviecomunnity.repository.CommentRepository;
 import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.repository.HeartRepository;
 import com.sparta.moviecomunnity.repository.PostRepository;
@@ -50,6 +52,12 @@ public class PostService {
             Post post = foundPost.get();
             User author = post.getAuthor();
             List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
+            
+            for (Comment comment : comments) {
+                CommentResponseDto singleComment = new CommentResponseDto(comment.getId(), comment.getCommentContent());
+                commentResponseDtos.add(singleComment);
+            }
+            
             return new PostResponseDto(post, author.getUsername(), commentResponseDtos);
         } else {
             throw new CustomException(RESOURCE_NOT_FOUND);
