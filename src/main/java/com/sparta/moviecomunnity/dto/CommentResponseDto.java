@@ -15,7 +15,7 @@ public class CommentResponseDto {
 
     public CommentResponseDto(Comment comment, int hearts) {
         this.id = comment.getId();
-        this.user = comment.getUser().getUserName();
+        this.user = comment.getUser().getUsername();
         this.commentContents = comment.getCommentContent();
         this.hearts = hearts;
     }

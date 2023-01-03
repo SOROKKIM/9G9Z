@@ -32,6 +32,7 @@ public class UserController {
 
         SignupResponseDto SignupResponseDto = userService.signup(signupRequestDto,role);
         return SignupResponseDto;
+
     }
 
 }

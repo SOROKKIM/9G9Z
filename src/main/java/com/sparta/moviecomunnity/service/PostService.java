@@ -36,7 +36,8 @@ public class PostService {
         List<PostResponseDto> responseDtos = new ArrayList<>();
 
         for (Post post : posts) {
-            User author = post.getAuthor();
+            //User author = post.getAuthor();
+            String author = post.getAuthor();
             List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
             List<Comment> comments = post.getComments();
             for (Comment comment : comments) {
@@ -55,7 +56,8 @@ public class PostService {
         Optional<Post> foundPost = postRepository.findPostById(id);
         if (foundPost.isPresent()) {
             Post post = foundPost.get();
-            User author = post.getAuthor();
+            //User author = post.getAuthor();
+            String author = post.getAuthor();
             List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
             List<Comment> comments = post.getComments();
             for (Comment comment : comments) {
