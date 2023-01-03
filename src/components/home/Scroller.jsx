@@ -1,4 +1,4 @@
-import './scroller.css';
+import './home.css';
 
 
 function Scroller() {

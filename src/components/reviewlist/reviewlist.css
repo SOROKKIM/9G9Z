@@ -1,0 +1,40 @@
+.review-background {
+  color: black;
+  width: 98.5%;
+  height: 1000px;
+  margin: auto;
+  margin-top: 10px;
+  padding: 10px;
+  background-color: rgb(218, 218, 218);
+  font-size: 20px;
+  font-family: 'Roboto Condensed', sans-serif
+}
+
+.signup-box h1 {
+  text-align: center;
+}
+
+.review-box-container {
+  color: black;
+  width: 75%;
+  height: 1000px;
+  margin: auto;
+  margin-top: -9.5px;
+  padding: 10px;
+  background-color: rgb(255, 255, 255);
+  font-size: 20px;
+  font-family: 'Roboto Condensed', sans-serif;
+}
+
+.review-box {
+  color: black;
+  width: 60%;
+  height: 250px;
+  margin: auto;
+  padding: 10px;
+  background-color: rgba(232, 232, 232, 0.168);
+  font-size: 20px;
+  font-family: 'Roboto Condensed', sans-serif;
+  border: 1px solid rgb(232, 232, 232, 0.168);
+  border-radius: 3px;
+}
