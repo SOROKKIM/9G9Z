@@ -27,8 +27,12 @@ public class Post extends Timestamped{
     private User author;
 
     @OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "COMMENT_ID")
+    @JoinColumn(name = "HEART_ID")
     private List<Heart> hearts;
+
+    @OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "COMMENT_ID")
+    private List<Comment> comments;
 
     public Post(String title, String content, User author) {
         this.title = title;

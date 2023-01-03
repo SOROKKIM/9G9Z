@@ -1,8 +1,5 @@
 package com.sparta.moviecomunnity.service;
 
-
-
-import com.sparta.moviecomunnity.dto.HttpResponseDto;
 import com.sparta.moviecomunnity.entity.Comment;
 import com.sparta.moviecomunnity.entity.Heart;
 import com.sparta.moviecomunnity.entity.User;
@@ -30,11 +27,11 @@ public class HeartService {
     private final CommentRepository commentRepository;
 
     public ResponseEntity<ServerResponse> updatePostLikes(Long boardId, String subject) {
-        User user = userRepository.findByUsername(subject).orElseThrow(
+        User user = userRepository.findByUserName(subject).orElseThrow(
                 () -> new CustomException(MEMBER_NOT_FOUND)
         );
 
-        Optional<Heart> heart = heartRepository.findHeartByUserAndBoardId(user, boardId);
+        Optional<Heart> heart = heartRepository.findHeartByUserAndPostId(user, boardId);
 
         if(heart.isPresent()) {
             heartRepository.deleteById(heart.get().getId());
@@ -49,7 +46,7 @@ public class HeartService {
 
 
     public ResponseEntity<ServerResponse> updateCommentLikes(Long commentId, String subject) {
-        User user = userRepository.findByUsername(subject).orElseThrow(
+        User user = userRepository.findByUserName(subject).orElseThrow(
                 () -> new CustomException(MEMBER_NOT_FOUND)
         );
 
@@ -64,6 +61,5 @@ public class HeartService {
             heartRepository.save(new Heart(user, comment.getPost().getId(), commentId));
             return ServerResponse.toResponseEntity(SUCCESS_LIKE);
         }
-
     }
 }

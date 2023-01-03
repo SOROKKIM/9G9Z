@@ -1,9 +1,7 @@
 package com.sparta.moviecomunnity.service;
 
 import com.sparta.moviecomunnity.dto.CommentRequestDto;
-import com.sparta.moviecomunnity.dto.CommentResponseDto;
 import com.sparta.moviecomunnity.dto.HttpResponseDto;
-import com.sparta.moviecomunnity.dto.ResponseDto;
 import com.sparta.moviecomunnity.entity.Comment;
 import com.sparta.moviecomunnity.entity.Post;
 import com.sparta.moviecomunnity.entity.User;
@@ -14,8 +12,6 @@ import com.sparta.moviecomunnity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
@@ -36,12 +32,12 @@ public class CommentService {
 
 //        Long id = commentRequestDto.getPostId();
 //        postRepository.findPostById(id);
-       Optional<Post> foundPost = postRepository.findPostById(commentRequestDto.getPostId());
-       if (foundPost.isPresent()) {
-           Post post = foundPost.get();
-           Comment comment = new Comment(post, commentRequestDto.getCommentContent(), user);
-           commentRepository.saveAndFlush(comment);
-       }
+        Optional<Post> foundPost = postRepository.findPostById(commentRequestDto.getPostId());
+        if (foundPost.isPresent()) {
+            Post post = foundPost.get();
+            Comment comment = new Comment(post, commentRequestDto.getCommentContent(), user);
+            commentRepository.saveAndFlush(comment);
+        }
     }
 
     //댓글 수정
@@ -59,7 +55,7 @@ public class CommentService {
 
     //댓글 삭제
     @Transactional
-    public HttpResponseDto deleteComment(long id) {
+    public void deleteComment(long id) {
         Optional<Comment> foundComment = commentRepository.findCommentById(id);
         if (foundComment.isPresent()) {
             Comment comment = foundComment.get();
@@ -68,6 +64,5 @@ public class CommentService {
             throw new IllegalArgumentException("댓글을 찾을 수 없습니다.");
         }
     }
-
 
 }

@@ -21,9 +21,9 @@ public enum ResponseCode {
     SUCCESS_DELETE(OK, "성공적으로 삭제하였습니다."),
 
     // 좋아요 기능 성공
-    SUCCESS_LIKE(OK,"좋아요 하셨습니다."),
-    SUCCESS_DELETE_LIKE(OK, "좋아요를 취소하셨습니다."),
-
+    SUCCESS_LIKE(OK,"좋아요 하였습니다."),
+    SUCCESS_DELETE_LIKE(OK, "좋아요를 취소하였습니다."),
+    SUCCESS_SIGNIN(OK, "회원가입에 성공하였습니다."),
 
     /* 400 BAD_REQUEST : 잘못된 요청 */
 

@@ -30,15 +30,19 @@ public class PostService {
     private final HeartRepository heartRepository;
 
     @Transactional(readOnly = true)
-    public List<PostResponseDto> getAllPostByCreatedAtAsc() {
+    public List<PostResponseDto> getAllPostOrderByCreatedAtAsc() {
         List<Post> posts = postRepository.findAll(Sort.by(Sort.Direction.ASC, "CreatedAt"));
         List<PostResponseDto> responseDtos = new ArrayList<>();
 
         for (Post post : posts) {
             User author = post.getAuthor();
             List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
-            // 코멘트 추가시 수정 예정
-            PostResponseDto responseDto = new PostResponseDto(post, author.getUsername(), commentResponseDtos);
+            List<Comment> comments = post.getComments();
+            for (Comment comment : comments) {
+                CommentResponseDto commentResponseDto = new CommentResponseDto(comment, 0);
+                commentResponseDtos.add(commentResponseDto);
+            }
+            PostResponseDto responseDto = new PostResponseDto(post, commentResponseDtos);
             responseDtos.add(responseDto);
         }
 
@@ -52,13 +56,12 @@ public class PostService {
             Post post = foundPost.get();
             User author = post.getAuthor();
             List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
-            
+            List<Comment> comments = post.getComments();
             for (Comment comment : comments) {
-                CommentResponseDto singleComment = new CommentResponseDto(comment.getId(), comment.getCommentContent());
-                commentResponseDtos.add(singleComment);
+                CommentResponseDto commentResponseDto = new CommentResponseDto(comment, 0);
+                commentResponseDtos.add(commentResponseDto);
             }
-            
-            return new PostResponseDto(post, author.getUsername(), commentResponseDtos);
+            return new PostResponseDto(post, commentResponseDtos);
         } else {
             throw new CustomException(RESOURCE_NOT_FOUND);
         }
