@@ -1,7 +1,11 @@
 package com.sparta.moviecomunnity.service;
 
+import com.sparta.moviecomunnity.dto.CommentResponseDto;
 import com.sparta.moviecomunnity.dto.PostResponseDto;
+import com.sparta.moviecomunnity.entity.Comment;
 import com.sparta.moviecomunnity.entity.Post;
+import com.sparta.moviecomunnity.entity.User;
+import com.sparta.moviecomunnity.repository.CommentRepository;
 import com.sparta.moviecomunnity.repository.PostRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -44,7 +48,7 @@ public class PostService {
             List<Comment> comments = commentRepository.findCommentsByPostId(post.getId());
             List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
             for (Comment comment : comments) {
-                CommentResponseDto singleComment = new CommentResponseDto(comment.getId(), comment.getContent());
+                CommentResponseDto singleComment = new CommentResponseDto(comment.getId(), comment.getCommentContent());
                 commentResponseDtos.add(singleComment);
             }
 
