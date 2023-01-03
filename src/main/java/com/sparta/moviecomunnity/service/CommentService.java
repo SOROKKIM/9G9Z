@@ -36,12 +36,12 @@ public class CommentService {
 
 //        Long id = commentRequestDto.getPostId();
 //        postRepository.findPostById(id);
-       Optional<Post> foundPost = postRepository.findPostById(commentRequestDto.getPostId());
-       if (foundPost.isPresent()) {
-           Post post = foundPost.get();
-           Comment comment = new Comment(post, commentRequestDto.getCommentContent(), user);
-           commentRepository.saveAndFlush(comment);
-       }
+        Optional<Post> foundPost = postRepository.findPostById(commentRequestDto.getPostId());
+        if (foundPost.isPresent()) {
+            Post post = foundPost.get();
+            Comment comment = new Comment(post, commentRequestDto.getCommentContent(), user);
+            commentRepository.saveAndFlush(comment);
+        }
     }
 
     //댓글 수정
@@ -68,6 +68,6 @@ public class CommentService {
             throw new IllegalArgumentException("댓글을 찾을 수 없습니다.");
         }
     }
-
-
 }
+
+

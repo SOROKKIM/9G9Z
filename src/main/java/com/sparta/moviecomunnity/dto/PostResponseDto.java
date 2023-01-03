@@ -11,8 +11,8 @@ public class PostResponseDto {
     private Long id;
     private String author;
     private String title;
-    private String contents;
-    private int likes;
+    private String content;
+    private long likes;
     private List<CommentResponseDto> comments;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
@@ -21,8 +21,9 @@ public class PostResponseDto {
         this.id = post.getId();
         this.author = author;
         this.title = post.getTitle();
+        this.content = post.getContent();
+        this.likes = post.getHearts().size();
         this.comments = comments;
-        this.contents = post.getContent();
         this.createdAt = post.getCreatedAt();
         this.modifiedAt = post.getModifiedAt();
     }

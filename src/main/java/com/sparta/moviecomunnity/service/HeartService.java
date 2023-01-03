@@ -7,17 +7,19 @@ import com.sparta.moviecomunnity.entity.Comment;
 import com.sparta.moviecomunnity.entity.Heart;
 import com.sparta.moviecomunnity.entity.User;
 import com.sparta.moviecomunnity.exception.CustomException;
+import com.sparta.moviecomunnity.exception.ResponseCode;
+import com.sparta.moviecomunnity.exception.ServerResponse;
 import com.sparta.moviecomunnity.repository.CommentRepository;
 import com.sparta.moviecomunnity.repository.HeartRepository;
-import com.sparta.moviecomunnity.repository.PostRepository;
 import com.sparta.moviecomunnity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.sparta.moviecomunnity.exception.ErrorCode.MEMBER_NOT_FOUND;
+import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 
 @Transactional
 @Service
@@ -27,7 +29,7 @@ public class HeartService {
     private final HeartRepository heartRepository;
     private final CommentRepository commentRepository;
 
-    public HttpResponseDto updatePostLikes(Long boardId, String subject) {
+    public ResponseEntity<ServerResponse> updatePostLikes(Long boardId, String subject) {
         User user = userRepository.findByUsername(subject).orElseThrow(
                 () -> new CustomException(MEMBER_NOT_FOUND)
         );
@@ -36,16 +38,17 @@ public class HeartService {
 
         if(heart.isPresent()) {
             heartRepository.deleteById(heart.get().getId());
+            return ServerResponse.toResponseEntity(SUCCESS_DELETE_LIKE);
         }
         else {
             heartRepository.save(new Heart(user, boardId));
+            return ServerResponse.toResponseEntity(SUCCESS_LIKE);
         }
 
-        return new HttpResponseDto("success", 200L);
     }
 
 
-    public HttpResponseDto updateCommentLikes(Long commentId, String subject) {
+    public ResponseEntity<ServerResponse> updateCommentLikes(Long commentId, String subject) {
         User user = userRepository.findByUsername(subject).orElseThrow(
                 () -> new CustomException(MEMBER_NOT_FOUND)
         );
@@ -55,11 +58,12 @@ public class HeartService {
 
         if(heart.isPresent()) {
             heartRepository.deleteById(heart.get().getId());
+            return ServerResponse.toResponseEntity(SUCCESS_DELETE_LIKE);
         }
         else {
-            heartRepository.save(new Heart(user, comment.getPostId(), commentId));
+            heartRepository.save(new Heart(user, comment.getPost().getId(), commentId));
+            return ServerResponse.toResponseEntity(SUCCESS_LIKE);
         }
 
-        return new HttpResponseDto("success", 200L);
     }
 }
