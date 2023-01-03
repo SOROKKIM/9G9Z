@@ -18,18 +18,18 @@ public class Heart {
     private User user;
 
     @Column
-    private Long boardId;
+    private Long postId;
 
     private Long commentId;
 
-    public Heart(User user, Long boardId) {
+    public Heart(User user, Long postId) {
         this.user = user;
-        this.boardId = boardId;
+        this.postId = postId;
     }
 
-    public Heart(User user, Long boardId, Long commentId) {
+    public Heart(User user, Long postId, Long commentId) {
         this.user = user;
-        this.boardId = boardId;
+        this.postId = postId;
         this.commentId = commentId;
     }
 }
