@@ -9,7 +9,6 @@ import com.sparta.moviecomunnity.entity.User;
 import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.repository.CommentRepository;
 import com.sparta.moviecomunnity.repository.HeartRepository;
-import com.sparta.moviecomunnity.repository.PostRepository;
 import com.sparta.moviecomunnity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -57,7 +56,7 @@ public class HeartService {
             heartRepository.deleteById(heart.get().getId());
         }
         else {
-            heartRepository.save(new Heart(user, comment.getPostId(), commentId));
+            heartRepository.save(new Heart(user, comment.getPost().getId(), commentId));
         }
 
         return new HttpResponseDto("success", 200L);
