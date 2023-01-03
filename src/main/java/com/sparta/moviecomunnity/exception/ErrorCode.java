@@ -9,6 +9,9 @@ import static org.springframework.http.HttpStatus.*;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
+    /* 200 OK : 성공한 결과 반환 */
+
+
     /* 400 BAD_REQUEST : 잘못된 요청 */
 
     // 토큰이 필요한 API 요청에서 토큰을 전달하지 않았거나 정상 토큰이 아닐 때
