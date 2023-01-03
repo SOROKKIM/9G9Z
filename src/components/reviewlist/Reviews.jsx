@@ -10,6 +10,12 @@ function Reviews() {
       <div className="review-background">
         <div className="review-box-container">
           <ReviewBox />
+          <ReviewBox />
+          <ReviewBox />
+          <ReviewBox />
+          <ReviewBox />
+          <ReviewBox />
+          <ReviewBox />
         </div>
       </div>
     </section>

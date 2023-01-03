@@ -1,7 +1,7 @@
 .review-background {
   color: black;
   width: 98.5%;
-  height: 1000px;
+  height: 100%;
   margin: auto;
   margin-top: 10px;
   padding: 10px;
@@ -17,7 +17,7 @@
 .review-box-container {
   color: black;
   width: 75%;
-  height: 1000px;
+  height: 100%;
   margin: auto;
   margin-top: -9.5px;
   padding: 10px;
@@ -29,12 +29,45 @@
 .review-box {
   color: black;
   width: 60%;
-  height: 250px;
+  height: 150px;
   margin: auto;
   padding: 10px;
-  background-color: rgba(232, 232, 232, 0.168);
+  background-color: rgba(178, 178, 178, 0.414);
   font-size: 20px;
   font-family: 'Roboto Condensed', sans-serif;
-  border: 1px solid rgb(232, 232, 232, 0.168);
+  border: 1px solid rgb(178, 178, 178, 0.414);
   border-radius: 3px;
+  display: grid;
+  grid-template-columns: 20% 80%;
+  margin-bottom: 10px;
+}
+
+.review-movie-info {
+  line-height: 8px;
+  margin-bottom: 20px;
+}
+
+.review-movie-info h1 {
+  font-size: 21px;
+}
+
+.review-movie-info p {
+  font-size: 17px;
+}
+
+.review-content {
+  font-size: 14px;
+}
+
+.movie-poster img{
+  width: 100px;
+}
+
+.review-writer-info {
+  display: grid;
+  text-align: right;
+  grid-template-columns: 2fr 1fr;
+  margin-top: 30px;
+  padding-right: 10px;
+  font-size: 14px;
 }

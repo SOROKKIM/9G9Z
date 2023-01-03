@@ -9,6 +9,8 @@ function Home() {
       <Header />
       <div className="Home">
         <Scroller />
+        <Scroller />
+        <Scroller />
       </div>
     </div>
   )
