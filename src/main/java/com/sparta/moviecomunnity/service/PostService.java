@@ -7,6 +7,7 @@ import com.sparta.moviecomunnity.entity.Post;
 import com.sparta.moviecomunnity.entity.User;
 import com.sparta.moviecomunnity.repository.CommentRepository;
 import com.sparta.moviecomunnity.exception.CustomException;
+import com.sparta.moviecomunnity.repository.CommentRepository;
 import com.sparta.moviecomunnity.repository.HeartRepository;
 import com.sparta.moviecomunnity.repository.PostRepository;
 
