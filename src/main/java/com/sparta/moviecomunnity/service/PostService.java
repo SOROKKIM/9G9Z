@@ -2,8 +2,10 @@ package com.sparta.moviecomunnity.service;
 
 import com.sparta.moviecomunnity.dto.CommentResponseDto;
 import com.sparta.moviecomunnity.dto.PostResponseDto;
+import com.sparta.moviecomunnity.entity.Comment;
 import com.sparta.moviecomunnity.entity.Post;
 import com.sparta.moviecomunnity.entity.User;
+import com.sparta.moviecomunnity.repository.CommentRepository;
 import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.repository.CommentRepository;
 import com.sparta.moviecomunnity.repository.HeartRepository;
@@ -18,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.sparta.moviecomunnity.exception.ErrorCode.*;
+import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,15 +31,20 @@ public class PostService {
     private final HeartRepository heartRepository;
 
     @Transactional(readOnly = true)
-    public List<PostResponseDto> getAllPostByCreatedAtAsc() {
+    public List<PostResponseDto> getAllPostOrderByCreatedAtAsc() {
         List<Post> posts = postRepository.findAll(Sort.by(Sort.Direction.ASC, "CreatedAt"));
         List<PostResponseDto> responseDtos = new ArrayList<>();
 
         for (Post post : posts) {
-            User author = post.getAuthor();
+            //User author = post.getAuthor();
+            String author = post.getAuthor();
             List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
-            // 코멘트 추가시 수정 예정
-            PostResponseDto responseDto = new PostResponseDto(post, author.getUsername(), commentResponseDtos);
+            List<Comment> comments = post.getComments();
+            for (Comment comment : comments) {
+                CommentResponseDto commentResponseDto = new CommentResponseDto(comment, 0);
+                commentResponseDtos.add(commentResponseDto);
+            }
+            PostResponseDto responseDto = new PostResponseDto(post, commentResponseDtos);
             responseDtos.add(responseDto);
         }
 
@@ -49,9 +56,15 @@ public class PostService {
         Optional<Post> foundPost = postRepository.findPostById(id);
         if (foundPost.isPresent()) {
             Post post = foundPost.get();
-            User author = post.getAuthor();
+            //User author = post.getAuthor();
+            String author = post.getAuthor();
             List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
-            return new PostResponseDto(post, author.getUsername(), commentResponseDtos);
+            List<Comment> comments = post.getComments();
+            for (Comment comment : comments) {
+                CommentResponseDto commentResponseDto = new CommentResponseDto(comment, 0);
+                commentResponseDtos.add(commentResponseDto);
+            }
+            return new PostResponseDto(post, commentResponseDtos);
         } else {
             throw new CustomException(RESOURCE_NOT_FOUND);
         }
