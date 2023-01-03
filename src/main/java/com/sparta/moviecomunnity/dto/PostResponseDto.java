@@ -12,17 +12,17 @@ public class PostResponseDto {
     private String author;
     private String title;
     private String content;
-    private long likes;
+    private long hearts;
     private List<CommentResponseDto> comments;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public PostResponseDto(Post post, String author, List<CommentResponseDto> comments) {
+    public PostResponseDto(Post post, List<CommentResponseDto> comments) {
         this.id = post.getId();
-        this.author = author;
+        this.author = post.getAuthor().getUserName();
         this.title = post.getTitle();
         this.content = post.getContent();
-        this.likes = post.getHearts().size();
+        this.hearts = post.getHearts().size();
         this.comments = comments;
         this.createdAt = post.getCreatedAt();
         this.modifiedAt = post.getModifiedAt();

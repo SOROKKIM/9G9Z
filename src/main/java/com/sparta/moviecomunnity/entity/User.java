@@ -31,6 +31,4 @@ public class User {
         this.password = signupRequestDto.getPassword();
         this.role = role;
     }
-
-
 }
