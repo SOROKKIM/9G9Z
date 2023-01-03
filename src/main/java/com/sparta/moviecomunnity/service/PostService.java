@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.sparta.moviecomunnity.exception.ErrorCode.*;
+import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 
 @Service
 @RequiredArgsConstructor

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static com.sparta.moviecomunnity.exception.ErrorCode.INVALID_TOKEN;
+import static com.sparta.moviecomunnity.exception.ResponseCode.INVALID_TOKEN;
 
 @RestController
 @RequiredArgsConstructor

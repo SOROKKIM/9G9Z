@@ -8,8 +8,17 @@ import static org.springframework.http.HttpStatus.*;
 
 @Getter
 @AllArgsConstructor
-public enum ErrorCode {
-    /* 200 OK : 성공한 결과 반환 */
+public enum ResponseCode {
+    /* 200 OK : 성공 */
+
+    // 게시글 및 댓글 포스팅 성공
+    SUCCESS_CREATE(OK, "성공적으로 작성하였습니다."),
+
+    // 게시글 및 댓글 수정 성공
+    SUCCESS_EDIT(OK, "수정이 완료되었습니다."),
+
+    // 게시글 및 댓글 삭제 성공
+    SUCCESS_DELETE(OK, "성공적으로 삭제하였습니다."),
 
 
     /* 400 BAD_REQUEST : 잘못된 요청 */

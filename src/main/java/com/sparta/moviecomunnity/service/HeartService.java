@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.sparta.moviecomunnity.exception.ErrorCode.MEMBER_NOT_FOUND;
+import static com.sparta.moviecomunnity.exception.ResponseCode.MEMBER_NOT_FOUND;
 
 @Transactional
 @Service
