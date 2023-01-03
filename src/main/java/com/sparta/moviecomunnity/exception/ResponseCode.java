@@ -10,6 +10,11 @@ import static org.springframework.http.HttpStatus.*;
 @AllArgsConstructor
 public enum ResponseCode {
     /* 200 OK : 성공 */
+    // 회원가입 성공
+    SUCCESS_SIGNUP(OK, "회원가입이 완료되었습니다."),
+
+    // 로그인 성공
+    SUCCESS_SIGNIN(OK, "로그인이 완료되었습니다."),
 
     // 게시글 및 댓글 포스팅 성공
     SUCCESS_CREATE(OK, "성공적으로 작성하였습니다."),
@@ -21,9 +26,8 @@ public enum ResponseCode {
     SUCCESS_DELETE(OK, "성공적으로 삭제하였습니다."),
 
     // 좋아요 기능 성공
-    SUCCESS_LIKE(OK,"좋아요 하셨습니다."),
-    SUCCESS_DELETE_LIKE(OK, "좋아요를 취소하셨습니다."),
-
+    SUCCESS_LIKE(OK,"좋아요 하였습니다."),
+    SUCCESS_DELETE_LIKE(OK, "좋아요를 취소하였습니다."),
 
     /* 400 BAD_REQUEST : 잘못된 요청 */
 

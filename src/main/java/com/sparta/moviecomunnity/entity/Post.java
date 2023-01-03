@@ -22,18 +22,23 @@ public class Post extends Timestamped{
     @Column(nullable = false)
     private String content;
 
-    @ManyToOne
-    @JoinColumn(name = "AUTHOR_ID", nullable = false)
-    private User author;
+    @Column
+//    @ManyToOne
+//    @JoinColumn(name = "AUTHOR_ID", nullable = false)
+    private String author;
+
+    @OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "HEART_ID")
+    private List<Heart> hearts;
 
     @OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "COMMENT_ID")
-    private List<Heart> hearts;
+    private List<Comment> comments;
 
     public Post(String title, String content, User author) {
         this.title = title;
         this.content = content;
-        this.author = author;
+        this.author = author.getUsername();
         this.hearts = new ArrayList<>();
     }
 

@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface HeartRepository extends JpaRepository<Heart, Long> {
-    Optional<Heart> findHeartByUserAndBoardId(User user, Long boardId);
+    Optional<Heart> findHeartByUserAndPostId(User user, Long boardId);
     Optional<Heart> findHeartByUserAndCommentId(User user, Long commentId);
 
 }

@@ -9,15 +9,14 @@ import java.util.List;
 
 public class CommentResponseDto {
     private Long id;
-    private String author;
-    private String comment;
+    private String user;
+    private String commentContents;
     private int hearts;
 
-    public CommentResponseDto(Comment comment, String author, int hearts) {
+    public CommentResponseDto(Comment comment, int hearts) {
         this.id = comment.getId();
-        this.author = author;
+        this.user = comment.getUser().getUsername();
+        this.commentContents = comment.getCommentContent();
         this.hearts = hearts;
-
     }
-
 }

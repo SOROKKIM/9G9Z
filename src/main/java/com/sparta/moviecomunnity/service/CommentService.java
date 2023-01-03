@@ -1,9 +1,7 @@
 package com.sparta.moviecomunnity.service;
 
 import com.sparta.moviecomunnity.dto.CommentRequestDto;
-import com.sparta.moviecomunnity.dto.CommentResponseDto;
 import com.sparta.moviecomunnity.dto.HttpResponseDto;
-import com.sparta.moviecomunnity.dto.ResponseDto;
 import com.sparta.moviecomunnity.entity.Comment;
 import com.sparta.moviecomunnity.entity.Post;
 import com.sparta.moviecomunnity.entity.User;
@@ -14,8 +12,6 @@ import com.sparta.moviecomunnity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
@@ -59,15 +55,14 @@ public class CommentService {
 
     //댓글 삭제
     @Transactional
-    public HttpResponseDto deleteComment(long id) {
+    public void deleteComment(long id) {
         Optional<Comment> foundComment = commentRepository.findCommentById(id);
         if (foundComment.isPresent()) {
-            Comment comment = foundComment.get();
-            commentRepository.delete(comment);
+//            Comment comment = foundComment.get();
+//            commentRepository.delete(comment);
+            commentRepository.deleteById(id);
         } else {
             throw new IllegalArgumentException("댓글을 찾을 수 없습니다.");
         }
     }
 }
-
-
