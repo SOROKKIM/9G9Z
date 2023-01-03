@@ -20,8 +20,8 @@ public class HeartController {
     private final HeartService likeService;
     private final JwtUtil jwtUtil;
 
-    @PatchMapping("/api/boards/likes/{id}")
-    public HttpResponseDto likesBoards(@PathVariable String id, HttpServletRequest request) {
+    @PatchMapping("/api/boards/{id}/likes")
+    public HttpResponseDto likesPosts(@PathVariable String id, HttpServletRequest request) {
         String token = jwtUtil.resolveToken(request);
         Claims claims;
 
@@ -29,13 +29,13 @@ public class HeartController {
             if (jwtUtil.validateToken(token)) {
                 claims = jwtUtil.getUserInfoFromToken(token);
                 String subject = claims.getSubject();
-                return likeService.addBoardLikes(Long.valueOf(id), subject);
+                return likeService.updatePostLikes(Long.valueOf(id), subject);
             }
         }
         throw new CustomException(INVALID_TOKEN);
     }
 
-    @PatchMapping("/api/comments/likes/{id}")
+    @PatchMapping("/api/comments/{id}/likes")
     public HttpResponseDto likesComments(@PathVariable String id, HttpServletRequest request) {
         String token = jwtUtil.resolveToken(request);
         Claims claims;
@@ -44,7 +44,7 @@ public class HeartController {
             if (jwtUtil.validateToken(token)) {
                 claims = jwtUtil.getUserInfoFromToken(token);
                 String subject = claims.getSubject();
-                return likeService.addCommentLikes(Long.valueOf(id), subject);
+                return likeService.updateCommentLikes(Long.valueOf(id), subject);
             }
         }
         throw new CustomException(INVALID_TOKEN);
