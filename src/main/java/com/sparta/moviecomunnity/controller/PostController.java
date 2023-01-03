@@ -36,7 +36,7 @@ public class PostController {
         return postService.getPostByPostId(id);
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     @ResponseBody
     public ResponseEntity<ServerResponse> createPost(@RequestBody PostRequestDto PostRequestDto, HttpServletRequest request) {
 
