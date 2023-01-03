@@ -25,6 +25,10 @@ public enum ErrorCode {
 
     // DB에 이미 존재하는 username으로 회원가입을 요청한 경우
     DUPLICATE_RESOURCE(BAD_REQUEST, "중복된 username 입니다."),
+    // 리소스를 찾을 수 없을 때
+    RESOURCE_NOT_FOUND(BAD_REQUEST, "리소스를 찾을 수 없습니다."),
+    INVALID_POST_TITLE(BAD_REQUEST, "제목에 빈 칸을 입력할 수 없습니다."),
+    INVALID_POST_CONTENT(BAD_REQUEST, "내용에 빈 칸을 입력할 수 없습니다.")
     ;
 
     /* 401 UNAUTHORIZED : 인증되지 않은 사용자 */

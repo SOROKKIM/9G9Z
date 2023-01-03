@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -24,10 +26,15 @@ public class Post extends Timestamped{
     @JoinColumn(name = "AUTHOR_ID", nullable = false)
     private User author;
 
+    @OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "COMMENT_ID")
+    private List<Heart> hearts;
+
     public Post(String title, String content, User author) {
         this.title = title;
         this.content = content;
         this.author = author;
+        this.hearts = new ArrayList<>();
     }
 
     public void rewrite(String title, String content) {
