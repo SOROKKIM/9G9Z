@@ -3,10 +3,10 @@ package com.sparta.moviecomunnity.dto;
 import lombok.Getter;
 
 @Getter
-public class ResponseDtoWithStatusCode extends ResponseDto {
+public class HttpResponseDtoWithStatusCode extends HttpResponseDto {
     private int statusCode;
 
-    public ResponseDtoWithStatusCode(int statusCode, String msg) {
+    public HttpResponseDtoWithStatusCode(int statusCode, String msg) {
         super(msg);
         this.statusCode = statusCode;
     }

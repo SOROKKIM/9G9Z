@@ -6,6 +6,8 @@ import com.sparta.moviecomunnity.entity.Comment;
 import com.sparta.moviecomunnity.entity.Post;
 import com.sparta.moviecomunnity.entity.User;
 import com.sparta.moviecomunnity.repository.CommentRepository;
+import com.sparta.moviecomunnity.exception.CustomException;
+import com.sparta.moviecomunnity.repository.HeartRepository;
 import com.sparta.moviecomunnity.repository.PostRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -17,12 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.sparta.moviecomunnity.exception.ResponseCode.*;
+
 @Service
 @RequiredArgsConstructor
 public class PostService {
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final HeartRepository heartRepository;
 
     @Transactional(readOnly = true)
     public List<PostResponseDto> getAllPostByCreatedAtAsc() {
@@ -32,6 +37,7 @@ public class PostService {
         for (Post post : posts) {
             User author = post.getAuthor();
             List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
+            // 코멘트 추가시 수정 예정
             PostResponseDto responseDto = new PostResponseDto(post, author.getUsername(), commentResponseDtos);
             responseDtos.add(responseDto);
         }
@@ -45,16 +51,16 @@ public class PostService {
         if (foundPost.isPresent()) {
             Post post = foundPost.get();
             User author = post.getAuthor();
-            List<Comment> comments = commentRepository.findCommentsByPostId(post.getId());
             List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
+            
             for (Comment comment : comments) {
                 CommentResponseDto singleComment = new CommentResponseDto(comment.getId(), comment.getCommentContent());
                 commentResponseDtos.add(singleComment);
             }
-
+            
             return new PostResponseDto(post, author.getUsername(), commentResponseDtos);
         } else {
-            throw new IllegalArgumentException("게시글을 찾을 수 없습니다.");
+            throw new CustomException(RESOURCE_NOT_FOUND);
         }
     }
 
@@ -72,7 +78,7 @@ public class PostService {
             post.rewrite(title, content);
             postRepository.saveAndFlush(post);
         } else {
-            throw new IllegalArgumentException("게시글을 찾을 수 없습니다.");
+            throw new CustomException(RESOURCE_NOT_FOUND);
         }
     }
 
@@ -83,7 +89,7 @@ public class PostService {
             Post post = foundPost.get();
             postRepository.delete(post);
         } else {
-            throw new IllegalArgumentException("게시글을 찾을 수 없습니다.");
+            throw new CustomException(RESOURCE_NOT_FOUND);
         }
     }
 }
