@@ -4,6 +4,7 @@ import com.sparta.moviecomunnity.dto.PostRequestDto;
 import com.sparta.moviecomunnity.dto.PostResponseDto;
 import com.sparta.moviecomunnity.dto.HttpResponseDto;
 import com.sparta.moviecomunnity.dto.HttpResponseDtoWithStatusCode;
+import com.sparta.moviecomunnity.entity.User;
 import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.service.PostService;
 
