@@ -1,5 +1,9 @@
 package com.sparta.moviecomunnity.dto;
 
+
+import lombok.Getter;
+
+@Getter
 public class SignupResponseDto {
     private String msg;
     private int statusCode;
