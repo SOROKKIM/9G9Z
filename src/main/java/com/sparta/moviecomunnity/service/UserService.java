@@ -1,5 +1,6 @@
 package com.sparta.moviecomunnity.service;
 
+import com.sparta.moviecomunnity.dto.SigninRequestDto;
 import com.sparta.moviecomunnity.dto.SignupRequestDto;
 import com.sparta.moviecomunnity.dto.SignupResponseDto;
 import com.sparta.moviecomunnity.entity.User;
@@ -18,6 +19,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
     @Transactional
     public SignupResponseDto signup(SignupRequestDto signupRequestDto, UserRoleEnum role) {
@@ -33,4 +35,18 @@ public class UserService {
     }
 
 
+    public String signin(SigninRequestDto signinRequestDto) {
+        String username = signinRequestDto.getUserName();
+        String password = signinRequestDto.getPassword();
+        // 아이디 및 비밀먼호 확인
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () ->new IllegalArgumentException("등록된 사용자가 없습니다.")
+        );
+        if (!user.getPassword().equals(password) ) {
+        throw new IllegalArgumentException("비밀번호가 불일치 합니다.");
+        } else {
+            String createdToken = jwtUtil.createToken(user.getUsername(),user.getRole());
+            return createdToken;
+        }
+    }
 }
