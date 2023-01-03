@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 
 function ReviewBox() {
@@ -10,10 +11,10 @@ function ReviewBox() {
       <div>
         <div className="review-movie-info">
           <h1><strong>Titanic (1997)</strong></h1>
-          <p>Ratings: 9.5 / 10</p>
+          <p>Ratings: 9 / 10</p>
         </div>
         <div className="review-info">
-          <div className="review-title"><a><strong>One of the best movies I've ever seen...</strong></a></div>
+          <div className="review-title"><Link to="/selectedreview"><strong>One of the best movies I've ever seen...</strong></Link></div>
           <div className="review-writer-info">
             <a><i class="fa-solid fa-user"></i> hwane94</a>
             <a><i class="fa-regular fa-calendar"></i> 2023.01.03</a>

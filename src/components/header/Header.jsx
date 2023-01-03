@@ -27,7 +27,7 @@ function Header() {
       <div className="navbar">
         <Link to="/" className="nav-button">ABOUT US</Link>
         <Link to="/reviews" className="nav-button">REVIEW LIST</Link>
-        <Link to="/writereview" className="nav-button">REVIEW</Link>
+        <Link to="/rankings" className="nav-button">RANKINGS</Link>
         <a href="" id="profile-button" className="nav-button"><i class="fa-regular fa-user"></i>
           <div id="profile-submenu">
             <Link to="/signin">Login</Link>
