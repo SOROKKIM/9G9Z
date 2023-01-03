@@ -3,6 +3,7 @@ package com.sparta.moviecomunnity.controller;
 import com.sparta.moviecomunnity.dto.PostRequestDto;
 import com.sparta.moviecomunnity.dto.PostResponseDto;
 import com.sparta.moviecomunnity.entity.User;
+import com.sparta.moviecomunnity.entity.UserRoleEnum;
 import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.exception.ServerResponse;
 import com.sparta.moviecomunnity.service.PostService;
@@ -40,7 +41,7 @@ public class PostController {
     public ResponseEntity<ServerResponse> createPost(@RequestBody PostRequestDto PostRequestDto, HttpServletRequest request) {
 
         // 올바른 회원인지 검증
-        User author = new User("testName", "testPassword");
+        User author = new User("testName", "testPassword", UserRoleEnum.USER);
 
 
         // 게시글 작성

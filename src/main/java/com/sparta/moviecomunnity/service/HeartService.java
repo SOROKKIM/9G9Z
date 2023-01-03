@@ -27,7 +27,7 @@ public class HeartService {
     private final CommentRepository commentRepository;
 
     public ResponseEntity<ServerResponse> updatePostLikes(Long boardId, String subject) {
-        User user = userRepository.findByUserName(subject).orElseThrow(
+        User user = userRepository.findByUsername(subject).orElseThrow(
                 () -> new CustomException(MEMBER_NOT_FOUND)
         );
 
@@ -46,7 +46,7 @@ public class HeartService {
 
 
     public ResponseEntity<ServerResponse> updateCommentLikes(Long commentId, String subject) {
-        User user = userRepository.findByUserName(subject).orElseThrow(
+        User user = userRepository.findByUsername(subject).orElseThrow(
                 () -> new CustomException(MEMBER_NOT_FOUND)
         );
 

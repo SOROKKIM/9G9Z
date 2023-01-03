@@ -27,7 +27,7 @@ public class UserService {
         if(findUserId.isPresent()){
             throw new UserIdNotExistException();
         }
-        User user = new User(signupRequestDto,role);
+        User user = new User(signupRequestDto.getUserName(), signupRequestDto.getPassword(), role);
         userRepository.save(user);
         return new SignupResponseDto("회원가입 완료",200);
     }
