@@ -30,7 +30,8 @@ public class UserController {
             role = UserRoleEnum.ADMIN;
         }
 
-        userService.signup(signupRequestDto,role);a
-        return new SignupResponseDto("회원가입 완료",200);
+        SignupResponseDto SignupResponseDto = userService.signup(signupRequestDto,role);
+        return SignupResponseDto;
     }
+
 }

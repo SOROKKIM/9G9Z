@@ -54,7 +54,7 @@ public class WebSecurityConfig {
                 // JWT 인증/인가를 사용하기 위한 설정
                 .and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
-        http.formLogin().loginPage("/api/user/login-page").permitAll();
+        http.formLogin().disable();
 
 
         return http.build();
