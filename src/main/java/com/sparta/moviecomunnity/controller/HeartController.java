@@ -21,7 +21,7 @@ public class HeartController {
     private final HeartService likeService;
     private final JwtUtil jwtUtil;
 
-    @PatchMapping("/api/boards/{id}/likes")
+    @PatchMapping("/api/posts/{id}/likes")
     public ResponseEntity<ServerResponse> likesPosts(@PathVariable String id, HttpServletRequest request) {
         String token = jwtUtil.resolveToken(request);
         Claims claims;
