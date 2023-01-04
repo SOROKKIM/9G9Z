@@ -23,7 +23,7 @@ public class HeartController {
     private final HeartService likeService;
     private final JwtUtil jwtUtil;
 
-    @PatchMapping("/api/posts/{id}/likes")
+    @PatchMapping("/movie/posts/{id}/likes")
     public ResponseEntity<ServerResponse> likesPosts(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return likeService.updatePostLikes(id, userDetails.getUsername());
     }

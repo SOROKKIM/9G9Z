@@ -1,21 +1,20 @@
 package com.sparta.moviecomunnity.controller;
 
 import com.sparta.moviecomunnity.dto.SigninRequestDto;
-import com.sparta.moviecomunnity.dto.SigninResponseDto;
 import com.sparta.moviecomunnity.dto.SignupRequestDto;
-import com.sparta.moviecomunnity.dto.SignupResponseDto;
 import com.sparta.moviecomunnity.entity.UserRoleEnum;
 import com.sparta.moviecomunnity.exception.CustomException;
+import com.sparta.moviecomunnity.exception.ServerResponse;
 import com.sparta.moviecomunnity.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.sparta.moviecomunnity.jwt.JwtUtil;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import static com.sparta.moviecomunnity.exception.ResponseCode.INVALID_INFO;
-import static com.sparta.moviecomunnity.exception.ResponseCode.INVALID_POST_TITLE;
+import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,7 +24,7 @@ public class UserController {
     private static final String ADMIN_PASSWORD = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
     @PostMapping("/signup")
-    public SignupResponseDto signup(@RequestBody @Valid SignupRequestDto signupRequestDto) {
+    public ResponseEntity<ServerResponse> signup(@RequestBody @Valid SignupRequestDto signupRequestDto) {
 
         //사용자 role 확인
         UserRoleEnum role = UserRoleEnum.USER;
@@ -37,7 +36,7 @@ public class UserController {
         }
 
         userService.signup(signupRequestDto,role);
-        return new SignupResponseDto("회원가입 완료",200);
+        return ServerResponse.toResponseEntity(SUCCESS_SIGNUP);
     }
 
     //5가지 첫번째 이 메서드의 기능은?                컨트롤러의 로그인 기능
@@ -46,13 +45,13 @@ public class UserController {
     // 4번째 어떻게 동작을 할지 ? 로직?생각         if / else  : 로그인 성공 혹은 실패를 내보내주고 싶다.
     //5 번째 로직을 하기 위한 필드값 생각
     @PostMapping("/signin")
-    public SigninResponseDto signin(@RequestBody SigninRequestDto signinRequestDto, HttpServletResponse response) {
+    public ResponseEntity<ServerResponse> signin(@RequestBody SigninRequestDto signinRequestDto, HttpServletResponse response) {
 
        // 사용자 id 및 비밀번호 확인
         String create = userService.signin(signinRequestDto);
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, create);
 
-        return new SigninResponseDto("로그인 완료",200);
+        return ServerResponse.toResponseEntity(SUCCESS_SIGNIN);
     }
   }
 

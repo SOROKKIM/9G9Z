@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 import static com.sparta.moviecomunnity.exception.ResponseCode.INVALID_INFO;
+import static com.sparta.moviecomunnity.exception.ResponseCode.MEMBER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +26,7 @@ public class UserService {
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public SignupResponseDto signup(SignupRequestDto signupRequestDto, UserRoleEnum role) {
+    public void signup(SignupRequestDto signupRequestDto, UserRoleEnum role) {
 
         // 회원 중복 확인
         Optional<User> findUserId = userRepository.findByUsername(signupRequestDto.getUserName());
@@ -34,7 +35,6 @@ public class UserService {
         }
         User user = new User(signupRequestDto.getUserName(), signupRequestDto.getPassword(), role);
         userRepository.save(user);
-        return new SignupResponseDto("회원가입 완료",200);
     }
 
 
@@ -43,10 +43,11 @@ public class UserService {
         String password = signinRequestDto.getPassword();
         // 아이디 및 비밀먼호 확인
         User user = userRepository.findByUsername(username).orElseThrow(
-                () ->new IllegalArgumentException("등록된 사용자가 없습니다.")
+                () -> new CustomException(MEMBER_NOT_FOUND)
         );
+
         if (!user.getPassword().equals(password) ) {
-        throw new IllegalArgumentException("비밀번호가 불일치 합니다.");
+            throw new CustomException(INVALID_INFO);
         } else {
             String createdToken = jwtUtil.createToken(user.getUsername(),user.getRole());
             return createdToken;
