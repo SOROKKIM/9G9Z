@@ -61,7 +61,6 @@ public class CommentController {
     @ResponseBody
     @DeleteMapping("/movie/comments/{id}")
     public ResponseEntity<ServerResponse> deleteComment(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        
         // 게시글 삭제
         try {
             commentService.deleteComment(id, userDetails);
@@ -71,11 +70,5 @@ public class CommentController {
 
         return ServerResponse.toResponseEntity(SUCCESS_DELETE);
     }
-
-
-    //댓글 좋아요
-//    public CommentResponseDto likeOrDislikeComment(@PathVariable Long id, HttpServletRequest request) {
-//        return commentService.likeOrDislikeComment(id,request);
-//    }
 
 }
