@@ -43,8 +43,7 @@ public class PostController {
         // 올바른 회원인지 검증
         User author = new User("testName", "testPassword", UserRoleEnum.USER);
 
-
-        // 게시글 작성
+        // 게시글 검증
         String title = PostRequestDto.getTitle();
         String content = PostRequestDto.getContent();
         if (title.trim().equals("")) {

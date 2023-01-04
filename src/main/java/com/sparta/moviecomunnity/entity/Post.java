@@ -25,6 +25,7 @@ public class Post extends Timestamped{
     @Column
 //    @ManyToOne
 //    @JoinColumn(name = "AUTHOR_ID", nullable = false)
+//    private User author;
     private String author;
 
     @OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
@@ -40,6 +41,7 @@ public class Post extends Timestamped{
         this.content = content;
         this.author = author.getUsername();
         this.hearts = new ArrayList<>();
+        this.comments = new ArrayList<>();
     }
 
     public void rewrite(String title, String content) {

@@ -7,10 +7,7 @@ import com.sparta.moviecomunnity.dto.SignupResponseDto;
 import com.sparta.moviecomunnity.entity.UserRoleEnum;
 import com.sparta.moviecomunnity.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.sparta.moviecomunnity.jwt.JwtUtil;
 
 import javax.servlet.http.HttpServletResponse;
@@ -29,7 +26,7 @@ public class UserController {
         UserRoleEnum role = UserRoleEnum.USER;
         if (signupRequestDto.isAdmin()) {
             if (!signupRequestDto.getAdminPassword().equals(ADMIN_PASSWORD)) {
-0                throw new IllegalArgumentException("관리자 암호가 틀렸습니다. 관리자 가입이 불가능합니다.");
+                throw new IllegalArgumentException("관리자 암호가 틀렸습니다. 관리자 가입이 불가능합니다.");
             }
             role = UserRoleEnum.ADMIN;
         }
@@ -44,12 +41,14 @@ public class UserController {
     // 4번째 어떻게 동작을 할지 ? 로직?생각         if / else  : 로그인 성공 혹은 실패를 내보내주고 싶다.
     //5 번째 로직을 하기 위한 필드값 생각
     @PostMapping("/signin")
+    @ResponseBody
     public SigninResponseDto signin(@RequestBody SigninRequestDto signinRequestDto, HttpServletResponse response) {
 
        // 사용자 id 및 비밀번호 확인
         String create = userService.signin(signinRequestDto);
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER,create);
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, create);
 
+        return new SigninResponseDto("로그인 완료",200);
     }
   }
-}
+
