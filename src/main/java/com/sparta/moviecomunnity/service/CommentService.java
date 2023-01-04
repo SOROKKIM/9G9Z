@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.sparta.moviecomunnity.exception.ResponseCode.MEMBER_NOT_FOUND;
+import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 
 @RequiredArgsConstructor
 @Service
@@ -34,8 +34,6 @@ public class CommentService {
         Optional<Post> foundPost = postRepository.findPostById(commentRequestDto.getPostId());
         if (!foundPost.isPresent()) {
             throw new CustomException(MEMBER_NOT_FOUND);
-            //Comment comment = new Comment(post, commentRequestDto.getCommentContent(), user);
-            //commentRepository.saveAndFlush(comment);
         }
 
         Optional<User> foundAuthor = userRepository.findByUsername(userDetails.getUsername());
@@ -45,20 +43,30 @@ public class CommentService {
 
         Post post = foundPost.get();
         User user = foundAuthor.get();
-
-
+        Comment comment = new Comment(post, commentRequestDto.getCommentContent(), user);
+        commentRepository.save(comment);
     }
 
     //댓글 수정
     @Transactional
-    public void updateComment(Long id, CommentRequestDto commentRequestDto) {
+    public void editComment(Long id, CommentRequestDto commentRequestDto, UserDetailsImpl userDetails) {
+        Optional<User> foundUser = userRepository.findByUsername(userDetails.getUsername());
+        if (!foundUser.isPresent()) {
+            throw new CustomException(MEMBER_NOT_FOUND);
+        }
+
         Optional<Comment> foundComment = commentRepository.findCommentById(id);
-        if (foundComment.isPresent()) {
-            Comment comment = foundComment.get();
-            comment.update(commentRequestDto.getCommentContent());
-            commentRepository.saveAndFlush(comment);
+        if (!foundComment.isPresent()) {
+            throw new CustomException(RESOURCE_NOT_FOUND);
+        }
+        User user = foundUser.get();
+        Comment comment = foundComment.get();
+
+        if (user.getUsername().equals(comment.getUser().getUsername())) {
+            comment.edit(commentRequestDto.getCommentContent());
+            commentRepository.save(comment);
         } else {
-            throw new IllegalArgumentException("댓글을 찾을 수 없습니다.");
+            throw new CustomException(INVALID_AUTH_TOKEN);
         }
     }
 

@@ -40,19 +40,15 @@ public class CommentController {
     // 댓글 수정
     @ResponseBody
     @PutMapping("/movie/comments/{id}")
-    public ResponseEntity<ServerResponse> editComment(@PathVariable Long id, @RequestBody CommentRequestDto commentRequestDto) {
+    public ResponseEntity<ServerResponse> editComment(@PathVariable Long id, @RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        // 올바른 회원인지 검증
-
-
-        // 댓글 수정
         String comment = commentRequestDto.getCommentContent();
         if (comment.trim().equals("")) {
             throw new CustomException(INVALID_CONTENT);
         }
 
         try {
-            commentService.updateComment(id, commentRequestDto);
+            commentService.editComment(id, commentRequestDto, userDetails);
         } catch (IllegalArgumentException e) {
             throw new CustomException(RESOURCE_NOT_FOUND);
         }

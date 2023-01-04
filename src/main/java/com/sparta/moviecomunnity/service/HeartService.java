@@ -50,7 +50,6 @@ public class HeartService {
         }
     }
 
-
     public ResponseEntity<ServerResponse> updateCommentLikes(Long commentId, String subject) {
         User user = userRepository.findByUsername(subject).orElseThrow(
                 () -> new CustomException(MEMBER_NOT_FOUND)
