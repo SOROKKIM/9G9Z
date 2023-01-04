@@ -5,6 +5,7 @@ import com.sparta.moviecomunnity.dto.SigninResponseDto;
 import com.sparta.moviecomunnity.dto.SignupRequestDto;
 import com.sparta.moviecomunnity.dto.SignupResponseDto;
 import com.sparta.moviecomunnity.entity.UserRoleEnum;
+import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -12,9 +13,13 @@ import com.sparta.moviecomunnity.jwt.JwtUtil;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+
+import static com.sparta.moviecomunnity.exception.ResponseCode.INVALID_INFO;
+import static com.sparta.moviecomunnity.exception.ResponseCode.INVALID_POST_TITLE;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/user")
+@RequestMapping("/movie/user")
 public class UserController {
     private final UserService userService;
     private static final String ADMIN_PASSWORD = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
@@ -26,7 +31,7 @@ public class UserController {
         UserRoleEnum role = UserRoleEnum.USER;
         if (signupRequestDto.isAdmin()) {
             if (!signupRequestDto.getAdminPassword().equals(ADMIN_PASSWORD)) {
-                throw new IllegalArgumentException("관리자 암호가 틀렸습니다. 관리자 가입이 불가능합니다.");
+                throw new CustomException(INVALID_INFO);
             }
             role = UserRoleEnum.ADMIN;
         }

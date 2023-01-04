@@ -23,7 +23,7 @@ public class PostController {
 
     private final PostService postService;
 
-    @GetMapping("/")
+    @GetMapping("")
     @ResponseBody
     public List<PostResponseDto> getAllPostOrderByCreatedTimeAsc() {
         return postService.getAllPostOrderByCreatedAtAsc();
