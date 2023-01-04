@@ -4,16 +4,19 @@ import './reviewlist.css';
 
 
 
-function ReviewList() {
+function ReviewList({ review }) {
+
+  const mappedReview = review.map(n => {
+    return (
+      <ReviewBox key={n.id} mTitle={n.movieTitle} mRating={n.movieRating} mPosterUrl={n.moviePosterUrl} rTitle={n.reviewTitle} username={n.username} date={n.dateOfReview}/>
+    )
+  })
+
   return (
     <section>
       <div className="review-background">
         <div className="review-box-container">
-          <ReviewBox />
-          <ReviewBox />
-          <ReviewBox />
-          <ReviewBox />
-          <ReviewBox />
+          {mappedReview}
         </div>
       </div>
     </section>

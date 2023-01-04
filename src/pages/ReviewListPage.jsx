@@ -3,12 +3,12 @@ import Header from "../components/header/Header";
 import '../components/header/header.css'
 import ReviewList from "../components/reviewlist/ReviewList";
 
-function ReviewListPage() {
+function ReviewListPage({ review }) {
   return (
     <div>
       <Header />
       <section>
-        <ReviewList />
+        <ReviewList review={review}/>
       </section>
     </div>
   )

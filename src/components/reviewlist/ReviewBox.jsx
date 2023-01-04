@@ -2,22 +2,22 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 
-function ReviewBox() {
+function ReviewBox({ key, mTitle, mRating, mPosterUrl, rTitle, username, date }) {
   return (
     <div className="review-box">
       <div className="movie-poster">
-        <img src="https://cdn.shopify.com/s/files/1/0057/3728/3618/products/b88f1213c01b76e6eb509b28deaf97c4_cf8616aa-04be-4ef0-800d-27d71437a89c_480x.progressive.jpg?v=1573595127" />
+        <img src={mPosterUrl} />
       </div>
       <div>
         <div className="review-movie-info">
-          <h1><strong>Titanic (1997)</strong></h1>
-          <p>Ratings: 9 / 10</p>
+          <h1><strong>{mTitle}</strong></h1>
+          <p>Ratings: {mRating} / 10</p>
         </div>
         <div className="review-info">
-          <div className="review-title"><Link to="/selectedreview"><strong>One of the best movies I've ever seen...</strong></Link></div>
+          <div className="review-title"><Link to="/selectedreview/" key={key} mTitle={mTitle} mRating={mRating} mPosterUrl={mPosterUrl} rTitle={rTitle} username={username} date={date}><strong>{rTitle}</strong></Link></div>
           <div className="review-writer-info">
-            <a><i class="fa-solid fa-user"></i> hwane94</a>
-            <a><i class="fa-regular fa-calendar"></i> 2023.01.03</a>
+            <a><i className="fa-solid fa-user"></i> {username}</a>
+            <a><i className="fa-regular fa-calendar"></i> {date}</a>
           </div>
         </div>
       </div>
