@@ -6,7 +6,6 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-
 public class CommentResponseDto {
     private Long id;
     private String user;

@@ -1,10 +1,10 @@
 package com.sparta.moviecomunnity.entity;
 
-import com.sparta.moviecomunnity.dto.CommentRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,11 +22,12 @@ public class Comment extends Timestamped {
     @JoinColumn(name = "POST_ID")
     private Post post;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "AUTHOR_ID")
     private User user;
 
+    @OneToMany(mappedBy = "comment", fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Heart> hearts;
 
     public Comment(Post post, String commentContent, User user) {
         this.post = post;
@@ -34,7 +35,7 @@ public class Comment extends Timestamped {
         this.user = user;
     }
 
-    public void update(String commentContent) {
+    public void edit(String commentContent) {
         this.commentContent = commentContent;
     }
 

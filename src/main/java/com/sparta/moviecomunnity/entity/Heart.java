@@ -21,17 +21,18 @@ public class Heart {
     @JoinColumn(name = "POST_ID")
     private Post post;
 
-    private Long commentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "COMMENT_ID")
+    private Comment comment;
 
     public Heart(User user, Post post) {
         this.user = user;
         this.post = post;
     }
 
-    public Heart(User user, Post post, Long commentId) {
+    public Heart(User user, Comment comment) {
         this.user = user;
-        this.post = post;
-        this.commentId = commentId;
+        this.comment = comment;
     }
 }
 

@@ -5,6 +5,7 @@ import com.sparta.moviecomunnity.dto.PostResponseDto;
 import com.sparta.moviecomunnity.entity.Comment;
 import com.sparta.moviecomunnity.entity.Post;
 import com.sparta.moviecomunnity.entity.User;
+
 import com.sparta.moviecomunnity.entity.UserRoleEnum;
 import com.sparta.moviecomunnity.repository.*;
 import com.sparta.moviecomunnity.exception.CustomException;
@@ -58,6 +59,7 @@ public class PostService {
             Post post = foundPost.get();
             User author = post.getAuthor();
             List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
+
             List<Comment> comments = post.getComments();
             for (Comment comment : comments) {
                 CommentResponseDto commentResponseDto = new CommentResponseDto(comment, 0);

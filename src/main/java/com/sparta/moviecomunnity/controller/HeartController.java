@@ -30,6 +30,6 @@ public class HeartController {
 
     @PatchMapping("/movie/comments/{id}/likes")
     public ResponseEntity<ServerResponse> likesComments(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-            return likeService.updateCommentLikes(id, userDetails.getUsername());
+        return likeService.updateCommentLikes(id, userDetails.getUsername());
     }
 }

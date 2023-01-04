@@ -3,7 +3,6 @@ package com.sparta.moviecomunnity.config;
 import com.sparta.moviecomunnity.jwt.JwtAuthFilter;
 import com.sparta.moviecomunnity.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,14 +47,9 @@ public class WebSecurityConfig {
         // 기본 설정인 Session 방식은 사용하지 않고 JWT 방식을 사용하기 위한 설정
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        http.authorizeRequests().antMatchers("/api/user/**").permitAll()
-
-                .antMatchers("/movie/posts/**").permitAll()
+        http.authorizeRequests().antMatchers("/movie/user/**").permitAll()
                 .antMatchers(HttpMethod.GET,"/movie/posts").permitAll()
                 .anyRequest().authenticated()
-
-                .antMatchers(HttpMethod.GET, "/movie/posts").permitAll()
-                
                 // JWT 인증/인가를 사용하기 위한 설정
                 .and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
