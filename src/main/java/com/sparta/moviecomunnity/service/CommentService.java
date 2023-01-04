@@ -1,5 +1,6 @@
 package com.sparta.moviecomunnity.service;
 
+import com.sparta.moviecomunnity.dto.CommentCreateRequestDto;
 import com.sparta.moviecomunnity.dto.CommentRequestDto;
 import com.sparta.moviecomunnity.entity.Comment;
 import com.sparta.moviecomunnity.entity.Post;
@@ -31,7 +32,7 @@ public class CommentService {
 
     //댓글 작성
     @Transactional
-    public void createComment(CommentRequestDto commentRequestDto, UserDetailsImpl userDetails) {
+    public void createComment(CommentCreateRequestDto commentRequestDto, UserDetailsImpl userDetails) {
         Optional<Post> foundPost = postRepository.findPostById(commentRequestDto.getPostId());
         if (!foundPost.isPresent()) {
             throw new CustomException(MEMBER_NOT_FOUND);
