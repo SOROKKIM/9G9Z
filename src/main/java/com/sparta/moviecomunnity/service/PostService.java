@@ -34,7 +34,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public List<PostResponseDto> getAllPostOrderByCreatedAtAsc() {
-        List<Post> posts = postRepository.findAll(Sort.by(Sort.Direction.ASC, "CreatedAt"));
+        List<Post> posts = postRepository.findAllByAvailableTrue(Sort.by(Sort.Direction.ASC, "CreatedAt"));
         List<PostResponseDto> responseDtos = new ArrayList<>();
 
         for (Post post : posts) {
@@ -54,7 +54,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PostResponseDto getPostByPostId(long id) {
-        Optional<Post> foundPost = postRepository.findPostById(id);
+        Optional<Post> foundPost = postRepository.findPostByIdAndAvailableTrue(id);
         if (foundPost.isPresent()) {
             Post post = foundPost.get();
             User author = post.getAuthor();
@@ -98,11 +98,12 @@ public class PostService {
         Post post = foundPost.get();
         User author = foundAuthor.get();
 
-        if (!post.getAuthor().getUsername().equals(author.getUsername()) && !author.getRole().equals(UserRoleEnum.ADMIN)) {
+        if (post.getAuthor().getUsername().equals(author.getUsername()) || author.getRole().equals(UserRoleEnum.ADMIN)) {
+            post.edit(title, content);
+            postRepository.save(post);
+        } else {
             throw new CustomException(INVALID_AUTH_TOKEN);
         }
-        post.rewrite(title, content);
-        postRepository.save(post);
     }
 
     @Transactional
@@ -119,9 +120,11 @@ public class PostService {
         Post post = foundPost.get();
         User author = foundAuthor.get();
 
-        if (!post.getAuthor().getUsername().equals(author.getUsername()) && !author.getRole().equals(UserRoleEnum.ADMIN)) {
+        if (post.getAuthor().getUsername().equals(author.getUsername()) || author.getRole().equals(UserRoleEnum.ADMIN)) {
+            post.delete();
+            postRepository.save(post);
+        } else {
             throw new CustomException(INVALID_AUTH_TOKEN);
         }
-        postRepository.delete(post);
     }
 }

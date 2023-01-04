@@ -16,7 +16,7 @@ public class Comment extends Timestamped {
     private Long id;
 
     @Column(nullable = false)
-    private String commentContent;
+    private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "POST_ID")
@@ -29,14 +29,14 @@ public class Comment extends Timestamped {
     @OneToMany(mappedBy = "comment", fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Heart> hearts;
 
-    public Comment(Post post, String commentContent, User user) {
+    public Comment(Post post, String content, User user) {
         this.post = post;
-        this.commentContent = commentContent;
+        this.content = content;
         this.user = user;
     }
 
-    public void edit(String commentContent) {
-        this.commentContent = commentContent;
+    public void edit(String content) {
+        this.content = content;
     }
 
 }

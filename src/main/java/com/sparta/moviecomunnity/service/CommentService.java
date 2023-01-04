@@ -7,7 +7,6 @@ import com.sparta.moviecomunnity.entity.Post;
 import com.sparta.moviecomunnity.entity.User;
 import com.sparta.moviecomunnity.entity.UserRoleEnum;
 import com.sparta.moviecomunnity.exception.CustomException;
-import com.sparta.moviecomunnity.jwt.JwtUtil;
 import com.sparta.moviecomunnity.repository.CommentRepository;
 import com.sparta.moviecomunnity.repository.PostRepository;
 import com.sparta.moviecomunnity.repository.UserRepository;
@@ -27,7 +26,6 @@ public class CommentService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
-    private final JwtUtil jwtUtil;
 
 
     //댓글 작성
@@ -45,7 +43,7 @@ public class CommentService {
 
         Post post = foundPost.get();
         User user = foundAuthor.get();
-        Comment comment = new Comment(post, commentRequestDto.getCommentContent(), user);
+        Comment comment = new Comment(post, commentRequestDto.getContent(), user);
         commentRepository.save(comment);
     }
 
@@ -65,7 +63,7 @@ public class CommentService {
         Comment comment = foundComment.get();
 
         if (user.getUsername().equals(comment.getUser().getUsername())) {
-            comment.edit(commentRequestDto.getCommentContent());
+            comment.edit(commentRequestDto.getContent());
             commentRepository.save(comment);
         } else {
             throw new CustomException(INVALID_AUTH_TOKEN);
