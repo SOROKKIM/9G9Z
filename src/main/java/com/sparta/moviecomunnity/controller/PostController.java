@@ -54,7 +54,6 @@ public class PostController {
     @PutMapping("/{id}")
     @ResponseBody
     public ResponseEntity<ServerResponse> editPost(@PathVariable long id, @RequestBody PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
         // 게시글 수정
         String title = requestDto.getTitle();
         String content = requestDto.getContent();
