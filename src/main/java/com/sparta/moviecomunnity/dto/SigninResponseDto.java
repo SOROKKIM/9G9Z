@@ -1,5 +1,8 @@
 package com.sparta.moviecomunnity.dto;
 
+import lombok.Getter;
+
+@Getter
 public class SigninResponseDto {
 
     private String msg;

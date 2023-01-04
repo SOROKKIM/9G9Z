@@ -50,7 +50,7 @@ public enum ResponseCode {
     // 게시글 제목에 빈 칸을 입력한 경우
     INVALID_POST_TITLE(BAD_REQUEST, "제목에 빈 칸을 입력할 수 없습니다."),
     // 게시글 내용에 빈 칸을 입력한 경우
-    INVALID_POST_CONTENT(BAD_REQUEST, "내용에 빈 칸을 입력할 수 없습니다.")
+    INVALID_CONTENT(BAD_REQUEST, "내용에 빈 칸을 입력할 수 없습니다.")
     ;
 
     /* 401 UNAUTHORIZED : 인증되지 않은 사용자 */
