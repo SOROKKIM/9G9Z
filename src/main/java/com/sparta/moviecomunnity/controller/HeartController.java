@@ -21,7 +21,6 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.INVALID_TOKEN;
 @RequiredArgsConstructor
 public class HeartController {
     private final HeartService likeService;
-    private final JwtUtil jwtUtil;
 
     @PatchMapping("/movies/posts/{id}/likes")
     public ResponseEntity<ServerResponse> likesPosts(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
