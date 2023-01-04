@@ -6,10 +6,12 @@ import com.sparta.moviecomunnity.entity.User;
 import com.sparta.moviecomunnity.entity.UserRoleEnum;
 import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.exception.ServerResponse;
+import com.sparta.moviecomunnity.security.UserDetailsImpl;
 import com.sparta.moviecomunnity.service.PostService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,11 +40,7 @@ public class PostController {
 
     @PostMapping("")
     @ResponseBody
-    public ResponseEntity<ServerResponse> createPost(@RequestBody PostRequestDto PostRequestDto, HttpServletRequest request) {
-
-        // 올바른 회원인지 검증
-        User author = new User("testName", "testPassword", UserRoleEnum.USER);
-
+    public ResponseEntity<ServerResponse> createPost(@RequestBody PostRequestDto PostRequestDto, HttpServletRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 게시글 검증
         String title = PostRequestDto.getTitle();
         String content = PostRequestDto.getContent();
@@ -52,16 +50,13 @@ public class PostController {
             throw new CustomException(INVALID_POST_CONTENT);
         }
 
-        postService.createPost(title, content, author);
+        postService.createPost(title, content, userDetails);
         return ServerResponse.toResponseEntity(SUCCESS_CREATE);
     }
 
     @PutMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<ServerResponse> editPost(@PathVariable long id, @RequestBody PostRequestDto requestDto, HttpServletRequest request) {
-
-        // 올바른 회원인지 검증
-
+    public ResponseEntity<ServerResponse> editPost(@PathVariable long id, @RequestBody PostRequestDto requestDto, HttpServletRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         // 게시글 수정
         String title = requestDto.getTitle();
@@ -72,19 +67,17 @@ public class PostController {
             throw new CustomException(INVALID_POST_CONTENT);
         }
 
-        postService.rewritePost(id, title, content);
+        postService.editPost(id, title, content, userDetails);
 
         return ServerResponse.toResponseEntity(SUCCESS_EDIT);
     }
 
     @DeleteMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<ServerResponse> deletePost(@PathVariable long id) {
-        // 올바른 회원인지 검증
-
+    public ResponseEntity<ServerResponse> deletePost(@PathVariable long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         // 게시글 삭제
-        postService.deletePost(id);
+        postService.deletePost(id, userDetails);
 
         return ServerResponse.toResponseEntity(SUCCESS_DELETE);
     }

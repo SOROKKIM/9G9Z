@@ -41,7 +41,6 @@ public class UserController {
     // 4번째 어떻게 동작을 할지 ? 로직?생각         if / else  : 로그인 성공 혹은 실패를 내보내주고 싶다.
     //5 번째 로직을 하기 위한 필드값 생각
     @PostMapping("/signin")
-    @ResponseBody
     public SigninResponseDto signin(@RequestBody SigninRequestDto signinRequestDto, HttpServletResponse response) {
 
        // 사용자 id 및 비밀번호 확인
