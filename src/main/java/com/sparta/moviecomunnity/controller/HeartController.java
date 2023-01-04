@@ -29,17 +29,7 @@ public class HeartController {
     }
 
     @PatchMapping("/movie/comments/{id}/likes")
-    public ResponseEntity<ServerResponse> likesComments(@PathVariable String id, HttpServletRequest request) {
-        String token = jwtUtil.resolveToken(request);
-        Claims claims;
-
-        if(token != null) {
-            if (jwtUtil.validateToken(token)) {
-                claims = jwtUtil.getUserInfoFromToken(token);
-                String subject = claims.getSubject();
-                return likeService.updateCommentLikes(Long.valueOf(id), subject);
-            }
-        }
-        throw new CustomException(INVALID_TOKEN);
+    public ResponseEntity<ServerResponse> likesComments(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return likeService.updateCommentLikes(id, userDetails.getUsername());
     }
 }
