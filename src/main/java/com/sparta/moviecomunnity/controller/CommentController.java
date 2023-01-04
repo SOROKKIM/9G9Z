@@ -60,14 +60,11 @@ public class CommentController {
     // 댓글 삭제
     @ResponseBody
     @DeleteMapping("/movie/comments/{id}")
-    public ResponseEntity<ServerResponse> deleteComment(@PathVariable Long id) {
-
-        // 올바른 회원인지 검증
-
-
+    public ResponseEntity<ServerResponse> deleteComment(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        
         // 게시글 삭제
         try {
-            commentService.deleteComment(id);
+            commentService.deleteComment(id, userDetails);
         } catch (IllegalArgumentException e) {
             throw new CustomException(RESOURCE_NOT_FOUND);
         }

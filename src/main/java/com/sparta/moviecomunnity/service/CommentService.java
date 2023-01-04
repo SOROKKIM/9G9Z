@@ -4,6 +4,7 @@ import com.sparta.moviecomunnity.dto.CommentRequestDto;
 import com.sparta.moviecomunnity.entity.Comment;
 import com.sparta.moviecomunnity.entity.Post;
 import com.sparta.moviecomunnity.entity.User;
+import com.sparta.moviecomunnity.entity.UserRoleEnum;
 import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.jwt.JwtUtil;
 import com.sparta.moviecomunnity.repository.CommentRepository;
@@ -72,14 +73,25 @@ public class CommentService {
 
     //댓글 삭제
     @Transactional
-    public void deleteComment(long id) {
-        Optional<Comment> foundComment = commentRepository.findCommentById(id);
-        if (foundComment.isPresent()) {
-//            Comment comment = foundComment.get();
-//            commentRepository.delete(comment);
-            commentRepository.deleteById(id);
-        } else {
-            throw new IllegalArgumentException("댓글을 찾을 수 없습니다.");
+    public void deleteComment(long id, UserDetailsImpl userDetails) {
+        Optional<User> foundUser = userRepository.findByUsername(userDetails.getUsername());
+        if(!foundUser.isPresent()) {
+            throw new CustomException(MEMBER_NOT_FOUND);
         }
+
+        Optional<Comment> foundComment = commentRepository.findCommentById(id);
+        if (!foundComment.isPresent()) {
+            throw new CustomException(RESOURCE_NOT_FOUND);
+        }
+        User user = foundUser.get();
+        Comment comment = foundComment.get();
+
+        if(user.getUsername().equals(comment.getUser().getUsername()) || user.getRole().equals(UserRoleEnum.ADMIN)) {
+            commentRepository.delete(comment);
+        } else {
+            throw new CustomException(INVALID_AUTH_TOKEN);
+        }
+
+
     }
 }
