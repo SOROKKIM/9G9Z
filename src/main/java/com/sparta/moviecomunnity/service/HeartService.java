@@ -2,12 +2,14 @@ package com.sparta.moviecomunnity.service;
 
 import com.sparta.moviecomunnity.entity.Comment;
 import com.sparta.moviecomunnity.entity.Heart;
+import com.sparta.moviecomunnity.entity.Post;
 import com.sparta.moviecomunnity.entity.User;
 import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.exception.ResponseCode;
 import com.sparta.moviecomunnity.exception.ServerResponse;
 import com.sparta.moviecomunnity.repository.CommentRepository;
 import com.sparta.moviecomunnity.repository.HeartRepository;
+import com.sparta.moviecomunnity.repository.PostRepository;
 import com.sparta.moviecomunnity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,23 +27,27 @@ public class HeartService {
     private final UserRepository userRepository;
     private final HeartRepository heartRepository;
     private final CommentRepository commentRepository;
+    private final PostRepository postRepository;
 
-    public ResponseEntity<ServerResponse> updatePostLikes(Long boardId, String subject) {
-        User user = userRepository.findByUsername(subject).orElseThrow(
+    public ResponseEntity<ServerResponse> updatePostLikes(Long postId, String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(
                 () -> new CustomException(MEMBER_NOT_FOUND)
         );
 
-        Optional<Heart> heart = heartRepository.findHeartByUserAndPostId(user, boardId);
+        Post post = postRepository.findPostById(postId).orElseThrow(
+                () -> new CustomException(RESOURCE_NOT_FOUND)
+        );
+
+        Optional<Heart> heart = heartRepository.findHeartByUserAndPost(user, post);
 
         if(heart.isPresent()) {
             heartRepository.deleteById(heart.get().getId());
             return ServerResponse.toResponseEntity(SUCCESS_DELETE_LIKE);
         }
         else {
-            heartRepository.save(new Heart(user, boardId));
+            heartRepository.save(new Heart(user, post));
             return ServerResponse.toResponseEntity(SUCCESS_LIKE);
         }
-
     }
 
 
@@ -58,7 +64,7 @@ public class HeartService {
             return ServerResponse.toResponseEntity(SUCCESS_DELETE_LIKE);
         }
         else {
-            heartRepository.save(new Heart(user, comment.getPost().getId(), commentId));
+            //heartRepository.save(new Heart(user, comment.getPost().getId(), commentId));
             return ServerResponse.toResponseEntity(SUCCESS_LIKE);
         }
     }

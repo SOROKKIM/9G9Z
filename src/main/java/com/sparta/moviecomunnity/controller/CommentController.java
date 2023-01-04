@@ -4,11 +4,12 @@ import com.sparta.moviecomunnity.dto.CommentRequestDto;
 import com.sparta.moviecomunnity.entity.User;
 import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.exception.ServerResponse;
-import com.sparta.moviecomunnity.jwt.JwtUtil;
+import com.sparta.moviecomunnity.security.UserDetailsImpl;
 import com.sparta.moviecomunnity.service.CommentService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,24 +22,17 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 public class CommentController {
 
     private final CommentService commentService;
-    private final JwtUtil jwtUtil;
 
     // 댓글 작성
     @ResponseBody
     @PostMapping("")
-    public ResponseEntity<ServerResponse> createComment(@RequestBody CommentRequestDto commentRequestDto, HttpServletRequest request) {
-
-        // 올바른 회원인지 검증
-        User author = null;
-
-
-        // 댓글 작성
+    public ResponseEntity<ServerResponse> createComment(@RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         String comment = commentRequestDto.getCommentContent();
         if (comment.trim().equals("")) {
-            throw new CustomException(INVALID_AUTH_TOKEN);
+            throw new CustomException(INVALID_CONTENT);
         }
 
-        commentService.createComment(commentRequestDto, author);
+        commentService.createComment(commentRequestDto, userDetails);
         return ServerResponse.toResponseEntity(SUCCESS_CREATE);
     }
 
@@ -54,7 +48,7 @@ public class CommentController {
         // 댓글 수정
         String comment = commentRequestDto.getCommentContent();
         if (comment.trim().equals("")) {
-            throw new CustomException(INVALID_POST_CONTENT);
+            throw new CustomException(INVALID_CONTENT);
         }
 
         try {
