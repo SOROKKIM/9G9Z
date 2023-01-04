@@ -55,15 +55,8 @@ public class PostController {
     @ResponseBody
     public ResponseEntity<ServerResponse> editPost(@PathVariable long id, @RequestBody PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 게시글 수정
-        String title = requestDto.getTitle();
-        String content = requestDto.getContent();
-        if (title.trim().equals("")) {
-            throw new CustomException(INVALID_POST_TITLE);
-        } else if (content.trim().equals("")) {
-            throw new CustomException(INVALID_CONTENT);
-        }
 
-        postService.editPost(id, title, content, userDetails);
+        postService.editPost(id, requestDto, userDetails);
 
         return ServerResponse.toResponseEntity(SUCCESS_EDIT);
     }

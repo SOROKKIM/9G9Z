@@ -32,6 +32,7 @@ public class Post extends Timestamped{
     @OneToMany(mappedBy = "post", fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Comment> comments;
 
+    @Column
     private boolean available;
 
     public Post(String title, String content, User author) {

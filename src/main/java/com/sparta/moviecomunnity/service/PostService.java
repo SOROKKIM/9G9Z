@@ -1,12 +1,10 @@
 package com.sparta.moviecomunnity.service;
 
 import com.sparta.moviecomunnity.dto.CommentResponseDto;
+import com.sparta.moviecomunnity.dto.PostRequestDto;
 import com.sparta.moviecomunnity.dto.PostResponseDto;
-import com.sparta.moviecomunnity.entity.Comment;
-import com.sparta.moviecomunnity.entity.Post;
-import com.sparta.moviecomunnity.entity.User;
+import com.sparta.moviecomunnity.entity.*;
 
-import com.sparta.moviecomunnity.entity.UserRoleEnum;
 import com.sparta.moviecomunnity.repository.*;
 import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.repository.CommentRepository;
@@ -42,8 +40,10 @@ public class PostService {
             List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
             List<Comment> comments = post.getComments();
             for (Comment comment : comments) {
-                CommentResponseDto commentResponseDto = new CommentResponseDto(comment, 0);
-                commentResponseDtos.add(commentResponseDto);
+                if (comment.isAvailable()) {
+                    CommentResponseDto commentResponseDto = new CommentResponseDto(comment);
+                    commentResponseDtos.add(commentResponseDto);
+                }
             }
             PostResponseDto responseDto = new PostResponseDto(post, commentResponseDtos);
             responseDtos.add(responseDto);
@@ -62,8 +62,10 @@ public class PostService {
 
             List<Comment> comments = post.getComments();
             for (Comment comment : comments) {
-                CommentResponseDto commentResponseDto = new CommentResponseDto(comment, 0);
-                commentResponseDtos.add(commentResponseDto);
+                if (comment.isAvailable()) {
+                    CommentResponseDto commentResponseDto = new CommentResponseDto(comment);
+                    commentResponseDtos.add(commentResponseDto);
+                }
             }
             return new PostResponseDto(post, commentResponseDtos);
         } else {
@@ -85,7 +87,7 @@ public class PostService {
     }
 
     @Transactional
-    public void editPost(long id, String title, String content, UserDetailsImpl userDetails) {
+    public void editPost(long id, PostRequestDto requestDto, UserDetailsImpl userDetails) {
         Optional<Post> foundPost = postRepository.findPostById(id);
         if (!foundPost.isPresent()) {
             throw new CustomException(RESOURCE_NOT_FOUND);
@@ -99,6 +101,16 @@ public class PostService {
         User author = foundAuthor.get();
 
         if (post.getAuthor().getUsername().equals(author.getUsername()) || author.getRole().equals(UserRoleEnum.ADMIN)) {
+            String title = requestDto.getTitle();
+            String content = requestDto.getContent();
+            if ( title == null || title.trim().isEmpty() ) {
+                title = post.getTitle();
+            }
+
+            if ( content == null || content.trim().isEmpty() ) {
+                content = post.getContent();
+            }
+
             post.edit(title, content);
             postRepository.save(post);
         } else {
@@ -122,6 +134,21 @@ public class PostService {
 
         if (post.getAuthor().getUsername().equals(author.getUsername()) || author.getRole().equals(UserRoleEnum.ADMIN)) {
             post.delete();
+            List<Comment> comments = post.getComments();
+            for (Comment comment : comments) {
+                comment.delete();
+                List<Heart> hearts = comment.getHearts();
+                for (Heart heart : hearts) {
+                    heart.dislike();
+                    //heartRepository.save(heart);
+                }
+                //commentRepository.save(comment);
+            }
+            List<Heart> hearts = post.getHearts();
+            for (Heart heart : hearts) {
+                heart.dislike();
+                //heartRepository.save(heart);
+            }
             postRepository.save(post);
         } else {
             throw new CustomException(INVALID_AUTH_TOKEN);

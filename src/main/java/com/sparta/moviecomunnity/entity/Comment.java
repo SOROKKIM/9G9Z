@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,6 +27,9 @@ public class Comment extends Timestamped {
     @JoinColumn(name = "AUTHOR_ID")
     private User user;
 
+    @Column
+    private boolean available;
+
     @OneToMany(mappedBy = "comment", fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Heart> hearts;
 
@@ -33,10 +37,15 @@ public class Comment extends Timestamped {
         this.post = post;
         this.content = content;
         this.user = user;
+        this.hearts = new ArrayList<>();
+        this.available = true;
     }
 
     public void edit(String content) {
         this.content = content;
     }
 
+    public void delete() {
+        this.available = false;
+    }
 }
