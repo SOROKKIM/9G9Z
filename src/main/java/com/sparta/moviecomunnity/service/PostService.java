@@ -5,6 +5,7 @@ import com.sparta.moviecomunnity.dto.PostResponseDto;
 import com.sparta.moviecomunnity.entity.Comment;
 import com.sparta.moviecomunnity.entity.Post;
 import com.sparta.moviecomunnity.entity.User;
+import com.sparta.moviecomunnity.entity.UserRoleEnum;
 import com.sparta.moviecomunnity.repository.*;
 import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.repository.CommentRepository;
@@ -88,8 +89,14 @@ public class PostService {
             throw new CustomException(RESOURCE_NOT_FOUND);
         }
 
+        Optional<User> foundAuthor = userRepository.findByUsername(userDetails.getUsername());
+        if (!foundAuthor.isPresent()) {
+            throw new CustomException(MEMBER_NOT_FOUND);
+        }
         Post post = foundPost.get();
-        if (!post.getAuthor().getUsername().equals(userDetails.getUsername())) {
+        User author = foundAuthor.get();
+
+        if (!post.getAuthor().getUsername().equals(author.getUsername()) && !author.getRole().equals(UserRoleEnum.ADMIN)) {
             throw new CustomException(INVALID_AUTH_TOKEN);
         }
         post.rewrite(title, content);
@@ -103,8 +110,14 @@ public class PostService {
             throw new CustomException(RESOURCE_NOT_FOUND);
         }
 
+        Optional<User> foundAuthor = userRepository.findByUsername(userDetails.getUsername());
+        if (!foundAuthor.isPresent()) {
+            throw new CustomException(MEMBER_NOT_FOUND);
+        }
         Post post = foundPost.get();
-        if (!post.getAuthor().getUsername().equals(userDetails.getUsername())) {
+        User author = foundAuthor.get();
+
+        if (!post.getAuthor().getUsername().equals(author.getUsername()) && !author.getRole().equals(UserRoleEnum.ADMIN)) {
             throw new CustomException(INVALID_AUTH_TOKEN);
         }
         postRepository.delete(post);
