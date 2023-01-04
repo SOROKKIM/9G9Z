@@ -18,7 +18,7 @@ public class Comment extends Timestamped {
     @Column(nullable = false)
     private String commentContent;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "POST_ID")
     private Post post;
 

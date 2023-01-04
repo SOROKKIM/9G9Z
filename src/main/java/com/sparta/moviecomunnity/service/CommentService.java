@@ -5,16 +5,19 @@ import com.sparta.moviecomunnity.dto.HttpResponseDto;
 import com.sparta.moviecomunnity.entity.Comment;
 import com.sparta.moviecomunnity.entity.Post;
 import com.sparta.moviecomunnity.entity.User;
+import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.jwt.JwtUtil;
 import com.sparta.moviecomunnity.repository.CommentRepository;
 import com.sparta.moviecomunnity.repository.PostRepository;
 import com.sparta.moviecomunnity.repository.UserRepository;
+import com.sparta.moviecomunnity.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
+
+import static com.sparta.moviecomunnity.exception.ResponseCode.MEMBER_NOT_FOUND;
 
 @RequiredArgsConstructor
 @Service
@@ -28,16 +31,23 @@ public class CommentService {
 
     //댓글 작성
     @Transactional
-    public void createComment(CommentRequestDto commentRequestDto, User user) {
-
-//        Long id = commentRequestDto.getPostId();
-//        postRepository.findPostById(id);
+    public void createComment(CommentRequestDto commentRequestDto, UserDetailsImpl userDetails) {
         Optional<Post> foundPost = postRepository.findPostById(commentRequestDto.getPostId());
-        if (foundPost.isPresent()) {
-            Post post = foundPost.get();
+        if (!foundPost.isPresent()) {
+            throw new CustomException(MEMBER_NOT_FOUND);
             Comment comment = new Comment(post, commentRequestDto.getCommentContent(), user);
             commentRepository.saveAndFlush(comment);
         }
+
+        Optional<User> foundAuthor = userRepository.findByUsername(userDetails.getUsername());
+        if (!foundAuthor.isPresent()) {
+            throw new CustomException(MEMBER_NOT_FOUND);
+        }
+
+        Post post = foundPost.get();
+        User user = foundAuthor.get();
+
+
     }
 
     //댓글 수정
