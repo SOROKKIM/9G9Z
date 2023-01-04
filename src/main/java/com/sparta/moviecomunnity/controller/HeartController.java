@@ -21,7 +21,7 @@ public class HeartController {
     private final HeartService likeService;
     private final JwtUtil jwtUtil;
 
-    @PatchMapping("/api/posts/{id}/likes")
+    @PatchMapping("/movie/posts/{id}/likes")
     public ResponseEntity<ServerResponse> likesPosts(@PathVariable String id, HttpServletRequest request) {
         String token = jwtUtil.resolveToken(request);
         Claims claims;
@@ -36,7 +36,7 @@ public class HeartController {
         throw new CustomException(INVALID_TOKEN);
     }
 
-    @PatchMapping("/api/comments/{id}/likes")
+    @PatchMapping("/movie/comments/{id}/likes")
     public ResponseEntity<ServerResponse> likesComments(@PathVariable String id, HttpServletRequest request) {
         String token = jwtUtil.resolveToken(request);
         Claims claims;
