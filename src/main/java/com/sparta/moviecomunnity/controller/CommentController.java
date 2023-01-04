@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 
 @RestController
-@RequestMapping("/movie/comments")
+@RequestMapping("/movies/comments")
 @RequiredArgsConstructor
 public class CommentController {
 

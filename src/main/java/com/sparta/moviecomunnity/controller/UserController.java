@@ -18,7 +18,7 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/movie/user")
+@RequestMapping("/movies/users")
 public class UserController {
     private final UserService userService;
     private static final String ADMIN_PASSWORD = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";

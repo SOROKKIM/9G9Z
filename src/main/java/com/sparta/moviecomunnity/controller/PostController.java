@@ -18,7 +18,7 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/movie/posts")
+@RequestMapping("/movies/posts")
 public class PostController {
 
     private final PostService postService;
