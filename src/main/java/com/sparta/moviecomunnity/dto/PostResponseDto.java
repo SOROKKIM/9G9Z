@@ -19,8 +19,7 @@ public class PostResponseDto {
 
     public PostResponseDto(Post post, List<CommentResponseDto> comments) {
         this.id = post.getId();
-        //this.author = post.getAuthor().getUsername();
-        this.author = post.getAuthor();
+        this.author = post.getAuthor().getUsername();
         this.title = post.getTitle();
         this.content = post.getContent();
         this.hearts = post.getHearts().size();

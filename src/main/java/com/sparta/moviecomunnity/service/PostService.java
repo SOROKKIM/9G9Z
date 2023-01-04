@@ -5,12 +5,12 @@ import com.sparta.moviecomunnity.dto.PostResponseDto;
 import com.sparta.moviecomunnity.entity.Comment;
 import com.sparta.moviecomunnity.entity.Post;
 import com.sparta.moviecomunnity.entity.User;
-import com.sparta.moviecomunnity.repository.CommentRepository;
+import com.sparta.moviecomunnity.entity.UserRoleEnum;
+import com.sparta.moviecomunnity.repository.*;
 import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.repository.CommentRepository;
-import com.sparta.moviecomunnity.repository.HeartRepository;
-import com.sparta.moviecomunnity.repository.PostRepository;
 
+import com.sparta.moviecomunnity.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -27,6 +27,7 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final HeartRepository heartRepository;
 
@@ -36,8 +37,7 @@ public class PostService {
         List<PostResponseDto> responseDtos = new ArrayList<>();
 
         for (Post post : posts) {
-            //User author = post.getAuthor();
-            String author = post.getAuthor();
+            User author = post.getAuthor();
             List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
             List<Comment> comments = post.getComments();
             for (Comment comment : comments) {
@@ -56,8 +56,7 @@ public class PostService {
         Optional<Post> foundPost = postRepository.findPostById(id);
         if (foundPost.isPresent()) {
             Post post = foundPost.get();
-            //User author = post.getAuthor();
-            String author = post.getAuthor();
+            User author = post.getAuthor();
             List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
             List<Comment> comments = post.getComments();
             for (Comment comment : comments) {
@@ -71,31 +70,56 @@ public class PostService {
     }
 
     @Transactional
-    public void createPost(String title, String content, User author) {
+    public void createPost(String title, String content, UserDetailsImpl userDetails) {
+
+        Optional<User> foundAuthor = userRepository.findByUsername(userDetails.getUsername());
+        if (!foundAuthor.isPresent()) {
+            throw new CustomException(MEMBER_NOT_FOUND);
+        }
+
+        User author = foundAuthor.get();
         Post post = new Post(title, content, author);
-        postRepository.saveAndFlush(post);
+        postRepository.save(post);
     }
 
     @Transactional
-    public void rewritePost(long id, String title, String content) {
+    public void editPost(long id, String title, String content, UserDetailsImpl userDetails) {
         Optional<Post> foundPost = postRepository.findPostById(id);
-        if (foundPost.isPresent()) {
-            Post post = foundPost.get();
-            post.rewrite(title, content);
-            postRepository.saveAndFlush(post);
-        } else {
+        if (!foundPost.isPresent()) {
             throw new CustomException(RESOURCE_NOT_FOUND);
         }
+
+        Optional<User> foundAuthor = userRepository.findByUsername(userDetails.getUsername());
+        if (!foundAuthor.isPresent()) {
+            throw new CustomException(MEMBER_NOT_FOUND);
+        }
+        Post post = foundPost.get();
+        User author = foundAuthor.get();
+
+        if (!post.getAuthor().getUsername().equals(author.getUsername()) && !author.getRole().equals(UserRoleEnum.ADMIN)) {
+            throw new CustomException(INVALID_AUTH_TOKEN);
+        }
+        post.rewrite(title, content);
+        postRepository.save(post);
     }
 
     @Transactional
-    public void deletePost(long id) {
+    public void deletePost(long id, UserDetailsImpl userDetails) {
         Optional<Post> foundPost = postRepository.findPostById(id);
-        if (foundPost.isPresent()) {
-            Post post = foundPost.get();
-            postRepository.delete(post);
-        } else {
+        if (!foundPost.isPresent()) {
             throw new CustomException(RESOURCE_NOT_FOUND);
         }
+
+        Optional<User> foundAuthor = userRepository.findByUsername(userDetails.getUsername());
+        if (!foundAuthor.isPresent()) {
+            throw new CustomException(MEMBER_NOT_FOUND);
+        }
+        Post post = foundPost.get();
+        User author = foundAuthor.get();
+
+        if (!post.getAuthor().getUsername().equals(author.getUsername()) && !author.getRole().equals(UserRoleEnum.ADMIN)) {
+            throw new CustomException(INVALID_AUTH_TOKEN);
+        }
+        postRepository.delete(post);
     }
 }

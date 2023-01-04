@@ -57,7 +57,6 @@ public class WebSecurityConfig {
 
         http.formLogin().disable();
 
-
         return http.build();
     }
 
