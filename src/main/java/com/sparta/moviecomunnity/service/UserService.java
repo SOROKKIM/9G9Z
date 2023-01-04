@@ -25,7 +25,7 @@ public class UserService {
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public SignupResponseDto signup(SignupRequestDto signupRequestDto, UserRoleEnum role) {
+    public void signup(SignupRequestDto signupRequestDto, UserRoleEnum role) {
 
         // 회원 중복 확인
         Optional<User> findUserId = userRepository.findByUsername(signupRequestDto.getUserName());
@@ -34,7 +34,6 @@ public class UserService {
         }
         User user = new User(signupRequestDto.getUserName(), signupRequestDto.getPassword(), role);
         userRepository.save(user);
-        return new SignupResponseDto("회원가입 완료",200);
     }
 
 
