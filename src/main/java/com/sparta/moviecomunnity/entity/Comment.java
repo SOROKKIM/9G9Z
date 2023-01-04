@@ -8,7 +8,6 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@NoArgsConstructor
 public class Comment extends Timestamped {
 
     @Id
@@ -34,7 +33,7 @@ public class Comment extends Timestamped {
         this.user = user;
     }
 
-    public void update(String commentContent) {
+    public void edit(String commentContent) {
         this.commentContent = commentContent;
     }
 
