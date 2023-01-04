@@ -14,6 +14,7 @@ import com.sparta.moviecomunnity.jwt.JwtUtil;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import static com.sparta.moviecomunnity.exception.ResponseCode.INVALID_INFO;
 import static com.sparta.moviecomunnity.exception.ResponseCode.INVALID_POST_TITLE;
 
 @RestController
@@ -30,8 +31,7 @@ public class UserController {
         UserRoleEnum role = UserRoleEnum.USER;
         if (signupRequestDto.isAdmin()) {
             if (!signupRequestDto.getAdminPassword().equals(ADMIN_PASSWORD)) {
-//                throw new IllegalArgumentException("관리자 암호가 틀렸습니다. 관리자 가입이 불가능합니다.");
-                throw new CustomException(INVALID_POST_TITLE);
+                throw new CustomException(INVALID_INFO);
             }
             role = UserRoleEnum.ADMIN;
         }
