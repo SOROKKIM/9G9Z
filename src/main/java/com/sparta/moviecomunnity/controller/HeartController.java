@@ -28,7 +28,7 @@ public class HeartController {
         return likeService.updatePostLikes(id, userDetails.getUsername());
     }
 
-    @PatchMapping("/api/comments/{id}/likes")
+    @PatchMapping("/movie/comments/{id}/likes")
     public ResponseEntity<ServerResponse> likesComments(@PathVariable String id, HttpServletRequest request) {
         String token = jwtUtil.resolveToken(request);
         Claims claims;

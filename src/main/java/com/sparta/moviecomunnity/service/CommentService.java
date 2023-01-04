@@ -1,7 +1,6 @@
 package com.sparta.moviecomunnity.service;
 
 import com.sparta.moviecomunnity.dto.CommentRequestDto;
-import com.sparta.moviecomunnity.dto.HttpResponseDto;
 import com.sparta.moviecomunnity.entity.Comment;
 import com.sparta.moviecomunnity.entity.Post;
 import com.sparta.moviecomunnity.entity.User;
@@ -35,8 +34,8 @@ public class CommentService {
         Optional<Post> foundPost = postRepository.findPostById(commentRequestDto.getPostId());
         if (!foundPost.isPresent()) {
             throw new CustomException(MEMBER_NOT_FOUND);
-            Comment comment = new Comment(post, commentRequestDto.getCommentContent(), user);
-            commentRepository.saveAndFlush(comment);
+            //Comment comment = new Comment(post, commentRequestDto.getCommentContent(), user);
+            //commentRepository.saveAndFlush(comment);
         }
 
         Optional<User> foundAuthor = userRepository.findByUsername(userDetails.getUsername());
