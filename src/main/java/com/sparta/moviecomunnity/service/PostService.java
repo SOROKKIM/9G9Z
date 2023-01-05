@@ -1,6 +1,5 @@
 package com.sparta.moviecomunnity.service;
 
-import com.sparta.moviecomunnity.dto.CommentResponseDto;
 import com.sparta.moviecomunnity.dto.PostRequestDto;
 import com.sparta.moviecomunnity.dto.PostResponseDto;
 import com.sparta.moviecomunnity.entity.*;
@@ -23,70 +22,49 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
-    private final CommentService commentService;
-    private final UserService userService;
-    private final HeartService heartService;
 
     @Transactional(readOnly = true)
     public List<PostResponseDto> getAllPostOrderByCreatedAtAsc() {
+        List<PostResponseDto> postResponseDtoList = new ArrayList<>();
         List<Post> posts = postRepository.findAllByAvailableTrue(Sort.by(Sort.Direction.ASC, "CreatedAt"));
-        List<PostResponseDto> responseDtoList = new ArrayList<>();
-
         for (Post post : posts) {
-            responseDtoList.add(getPostResponseDto(post));
+            postResponseDtoList.add(new PostResponseDto(post));
         }
-
-        return responseDtoList;
+        return postResponseDtoList;
     }
 
     @Transactional(readOnly = true)
     public PostResponseDto getPostByPostId(Long id) {
         Post post = findPost(id);
-        return getPostResponseDto(post);
-    }
-
-    private PostResponseDto getPostResponseDto(Post post) {
-        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
-        List<Comment> comments = commentService.findCommentsByPostId(post.getId());
-        for (Comment comment : comments) {
-            CommentResponseDto commentResponseDto = new CommentResponseDto(comment);
-            commentResponseDto.setHearts(heartService.getCommentHeartCount(comment));
-            commentResponseDtoList.add(commentResponseDto);
-        }
-        PostResponseDto responseDto = new PostResponseDto(post, commentResponseDtoList);
-        responseDto.setHearts(heartService.getPostHeartCount(post));
-        return responseDto;
+        return new PostResponseDto(post);
     }
 
     @Transactional
-    public void createPost(String title, String content, String username) {
-        User author = userService.findUser(username);
+    public void createPost(String title, String content, User author) {
         Post post = new Post(title, content, author);
         postRepository.save(post);
     }
 
     @Transactional
     public void editPost(Long id, PostRequestDto requestDto, String username) {
-        User author = userService.findUser(username);
         Post post = findPost(id);
 
         // 수정은 오직 작성자 본인만 가능하다.
-        if (post.getAuthor().getUsername().equals(author.getUsername())) {
-
+        if (post.getAuthor().getUsername().equals(username)) {
 
             String title = requestDto.getTitle();
             String content = requestDto.getContent();
-            // title과 content 모두 빈 칸이면 예외를 발생시킨다.
+            // 제목과 내용 모두 빈 칸이면 예외를 발생시킨다.
             if (title.trim().isEmpty() && content.trim().isEmpty()) {
                 throw new CustomException(INVALID_EDIT_VALUE);
             }
 
-            // title만 빈 칸이면 원본 내용을 유지한다.
+            // 제목만 빈 칸이면 원본 내용을 유지한다.
             if (title.trim().isEmpty()) {
                 title = post.getTitle();
             }
 
-            // content만 빈 칸이면 원본 내용을 유지한다.
+            // 제목만 빈 칸이면 원본 내용을 유지한다.
             if (content.trim().isEmpty()) {
                 content = post.getContent();
             }
@@ -99,12 +77,11 @@ public class PostService {
     }
 
     @Transactional
-    public void deletePost(Long id, String username) {
-        User author = userService.findUser(username);
+    public void deletePost(Long id, String username, UserRoleEnum role) {
         Post post = findPost(id);
 
         // 삭제는 게시글 작성자 혹은 관리자라면 가능하다.
-        if (post.getAuthor().getUsername().equals(author.getUsername()) || author.getRole().equals(UserRoleEnum.ADMIN)) {
+        if (post.getAuthor().getUsername().equals(username) || role.equals(UserRoleEnum.ADMIN)) {
             post.delete();
 
             // 연관된 모든 코멘트도 삭제 처리 한다.

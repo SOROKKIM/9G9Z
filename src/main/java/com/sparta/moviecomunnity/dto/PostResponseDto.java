@@ -16,16 +16,17 @@ public class PostResponseDto {
     private final String content;
     @Setter
     private long hearts;
-    private final List<CommentResponseDto> comments;
+
+    @Setter
+    private List<CommentResponseDto> comments;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
-    public PostResponseDto(Post post, List<CommentResponseDto> comments) {
+    public PostResponseDto(Post post) {
         this.id = post.getId();
         this.author = post.getAuthor().getUsername();
         this.title = post.getTitle();
         this.content = post.getContent();
-        this.comments = comments;
         this.createdAt = post.getCreatedAt();
         this.modifiedAt = post.getModifiedAt();
     }

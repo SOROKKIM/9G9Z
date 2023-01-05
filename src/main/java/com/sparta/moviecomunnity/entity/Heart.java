@@ -36,7 +36,6 @@ public class Heart {
     //편의 메서드
     public void setComment(Comment comment) {
         if (this.comment != comment) {
-            this.comment.getHearts().remove(this);
             this.comment = comment;
             comment.addHeart(this);
         }
@@ -44,7 +43,6 @@ public class Heart {
 
     public void setPost(Post post) {
         if (this.post != post) {
-            this.post.getHearts().remove(this);
             this.post = post;
             post.addHeart(this);
         }

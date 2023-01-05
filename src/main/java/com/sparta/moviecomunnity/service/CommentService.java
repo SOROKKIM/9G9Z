@@ -2,6 +2,7 @@ package com.sparta.moviecomunnity.service;
 
 import com.sparta.moviecomunnity.dto.CommentCreateRequestDto;
 import com.sparta.moviecomunnity.dto.CommentRequestDto;
+import com.sparta.moviecomunnity.dto.CommentResponseDto;
 import com.sparta.moviecomunnity.entity.*;
 import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.repository.CommentRepository;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,14 +20,10 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 @Service
 public class CommentService {
     private final CommentRepository commentRepository;
-    private final PostService postService;
-    private final UserService userService;
 
     //댓글 작성
     @Transactional
-    public void createComment(CommentCreateRequestDto commentRequestDto, String username) {
-        Post post = postService.findPost(commentRequestDto.getPostId());
-        User user = userService.findUser(username);
+    public void createComment(CommentCreateRequestDto commentRequestDto, Post post, User user) {
         Comment comment = new Comment(commentRequestDto.getContent(), user);
         comment.setPost(post);
         commentRepository.save(comment);
@@ -34,11 +32,10 @@ public class CommentService {
     //댓글 수정
     @Transactional
     public void editComment(Long id, CommentRequestDto commentRequestDto, String username) {
-        User user = userService.findUser(username);
         Comment comment = findComment(id);
 
         // 댓글 수정은 작성자 본인만 수행할 수 있다.
-        if (user.getUsername().equals(comment.getUser().getUsername())) {
+        if (username.equals(comment.getUser().getUsername())) {
             comment.edit(commentRequestDto.getContent());
             commentRepository.save(comment);
         } else {
@@ -48,12 +45,11 @@ public class CommentService {
 
     //댓글 삭제
     @Transactional
-    public void deleteComment(long id, String username) {
-        User user = userService.findUser(username);
+    public void deleteComment(Long id, String username, UserRoleEnum role) {
         Comment comment = findComment(id);
 
         // 댓글 삭제는 작성자 본인과 관리자만 수행할 수 있다
-        if (user.getUsername().equals(comment.getUser().getUsername()) || user.getRole().equals(UserRoleEnum.ADMIN)) {
+        if (username.equals(comment.getUser().getUsername()) || role.equals(UserRoleEnum.ADMIN)) {
             comment.delete();
 
             // 연관된 모든 좋아요도 삭제 처리 한다.
@@ -69,9 +65,15 @@ public class CommentService {
     }
 
     @Transactional
-    public List<Comment> findCommentsByPostId(Long postId) {
+    public List<CommentResponseDto> findCommentsByPostId(Long postId) {
+        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
+        List<Comment> comments = commentRepository.findAllByPostIdAndAvailableTrue(postId);
+        for (Comment comment : comments) {
+            CommentResponseDto commentResponseDto = new CommentResponseDto(comment);
+            commentResponseDtoList.add(commentResponseDto);
+        }
         // 삭제 처리가 되지 않은 댓글만 찾아 반환한다.
-        return commentRepository.findAllByPostIdAndAvailableTrue(postId);
+        return commentResponseDtoList;
     }
 
     public Comment findComment(Long id) {

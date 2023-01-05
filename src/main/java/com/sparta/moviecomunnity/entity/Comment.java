@@ -43,7 +43,6 @@ public class Comment extends Timestamped {
     // 편의 메서드
     public void setPost(Post post) {
         if (this.post != post) {
-            this.post.getComments().remove(this);
             this.post = post;
             post.addComment(this);
         }

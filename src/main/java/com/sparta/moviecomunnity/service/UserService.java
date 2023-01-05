@@ -34,6 +34,7 @@ public class UserService {
     }
 
 
+    @Transactional(readOnly = true)
     public String signIn(SignInRequestDto signinRequestDto) {
         String username = signinRequestDto.getUsername();
         String password = signinRequestDto.getPassword();
@@ -53,15 +54,6 @@ public class UserService {
                 return jwtUtil.createToken(user.getUsername(),user.getRole());
             }
         }
-    }
-
-    public User findUser(String username) {
-        Optional<User> optionalAuthor = userRepository.findByUsername(username);
-        if (optionalAuthor.isEmpty()) {
-            throw new CustomException(MEMBER_NOT_FOUND);
-        }
-
-        return optionalAuthor.get();
     }
 
 }

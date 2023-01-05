@@ -20,15 +20,9 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 @RequiredArgsConstructor
 public class HeartService {
     private final HeartRepository heartRepository;
-    private final UserService userService;
-    private final CommentService commentService;
-    private final PostService postService;
 
 
-    public ResponseEntity<ServerResponse> updatePostLikes(Long postId, String username) {
-        User user = userService.findUser(username);
-        Post post = postService.findPost(postId);
-
+    public ResponseEntity<ServerResponse> updatePostLikes(Post post, User user) {
         Optional<Heart> optionalHeart = heartRepository.findHeartByUserAndPost(user, post);
         if(optionalHeart.isPresent()) {
             return likeOrDislike(optionalHeart.get());
@@ -41,9 +35,7 @@ public class HeartService {
         }
     }
 
-    public ResponseEntity<ServerResponse> updateCommentLikes(Long commentId, String username) {
-        User user = userService.findUser(username);
-        Comment comment = commentService.findComment(commentId);
+    public ResponseEntity<ServerResponse> updateCommentLikes(Comment comment, User user) {
 
         Optional<Heart> optionalHeart = heartRepository.findHeartByUserAndComment(user, comment);
         if(optionalHeart.isPresent()) {
@@ -68,11 +60,11 @@ public class HeartService {
         }
     }
 
-    public Integer getPostHeartCount(Post post) {
-        return heartRepository.countByPostAndAvailableTrue(post);
+    public Integer getPostHeartCount(Long postId) {
+        return heartRepository.countByPostIdAndAvailableTrue(postId);
     }
 
-    public Integer getCommentHeartCount(Comment comment) {
-        return heartRepository.countByCommentAndAvailableTrue(comment);
+    public Integer getCommentHeartCount(Long commentId) {
+        return heartRepository.countByCommentIdAndAvailableTrue(commentId);
     }
 }

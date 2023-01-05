@@ -2,11 +2,14 @@ package com.sparta.moviecomunnity.controller;
 
 import com.sparta.moviecomunnity.dto.CommentCreateRequestDto;
 import com.sparta.moviecomunnity.dto.CommentRequestDto;
+import com.sparta.moviecomunnity.entity.Post;
 import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.exception.ServerResponse;
 import com.sparta.moviecomunnity.security.UserDetailsImpl;
 import com.sparta.moviecomunnity.service.CommentService;
 
+import com.sparta.moviecomunnity.service.PostService;
+import com.sparta.moviecomunnity.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +23,7 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 public class CommentController {
 
     private final CommentService commentService;
+    private final PostService postService;
 
     // 댓글 작성
     @ResponseBody
@@ -29,8 +33,8 @@ public class CommentController {
         if (comment.trim().equals("")) {
             throw new CustomException(INVALID_CONTENT);
         }
-
-        commentService.createComment(commentRequestDto, userDetails.getUsername());
+        Post post = postService.findPost(commentRequestDto.getPostId());
+        commentService.createComment(commentRequestDto, post, userDetails.getUser());
         return ServerResponse.toResponseEntity(SUCCESS_CREATE);
     }
 
@@ -54,7 +58,7 @@ public class CommentController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ServerResponse> deleteComment(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 게시글 삭제
-        commentService.deleteComment(id, userDetails.getUsername());
+        commentService.deleteComment(id, userDetails.getUsername(), userDetails.getUser().getRole());
         return ServerResponse.toResponseEntity(SUCCESS_DELETE);
     }
 
