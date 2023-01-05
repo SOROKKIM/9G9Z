@@ -36,7 +36,6 @@ public class UserService {
 
 
     public String signin(SigninRequestDto signinRequestDto) {
-
         String username = signinRequestDto.getUsername();
         String password = signinRequestDto.getPassword();
 
@@ -52,10 +51,18 @@ public class UserService {
             if (!user.getPassword().equals(password) ) {
                 throw new CustomException(INVALID_PASSWORD);
             } else {
-                String createdToken = jwtUtil.createToken(user.getUsername(),user.getRole());
-                return createdToken;
+                return jwtUtil.createToken(user.getUsername(),user.getRole());
             }
         }
-
     }
+
+    public User findUser(String username) {
+        Optional<User> optionalAuthor = userRepository.findByUsername(username);
+        if (optionalAuthor.isEmpty()) {
+            throw new CustomException(MEMBER_NOT_FOUND);
+        }
+
+        return optionalAuthor.get();
+    }
+
 }

@@ -55,17 +55,15 @@ public class PostController {
 
     @PutMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<ServerResponse> editPost(@PathVariable long id, @RequestBody PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<ServerResponse> editPost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 게시글 수정
-
         postService.editPost(id, requestDto, userDetails);
         return ServerResponse.toResponseEntity(SUCCESS_EDIT);
     }
 
     @DeleteMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<ServerResponse> deletePost(@PathVariable long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
+    public ResponseEntity<ServerResponse> deletePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 게시글 삭제
         postService.deletePost(id, userDetails);
         return ServerResponse.toResponseEntity(SUCCESS_DELETE);

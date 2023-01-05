@@ -25,30 +25,30 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final CommentService commentService;
+    private final UserService userService;
     private final HeartService heartService;
 
     @Transactional(readOnly = true)
     public List<PostResponseDto> getAllPostOrderByCreatedAtAsc() {
         List<Post> posts = postRepository.findAllByAvailableTrue(Sort.by(Sort.Direction.ASC, "CreatedAt"));
-        List<PostResponseDto> responseDtos = new ArrayList<>();
+        List<PostResponseDto> responseDtoList = new ArrayList<>();
 
         for (Post post : posts) {
-            responseDtos.add(getPostResponseDto(post));
+            responseDtoList.add(getPostResponseDto(post));
         }
 
-        return responseDtos;
+        return responseDtoList;
     }
 
     @Transactional(readOnly = true)
-    public PostResponseDto getPostByPostId(long id) {
-        Optional<Post> foundPost = postRepository.findPostById(id);
-        if (foundPost.isPresent()) {
-            Post post = foundPost.get();
+    public PostResponseDto getPostByPostId(Long id) {
+        Optional<Post> optionalPost = postRepository.findPostById(id);
+        if (optionalPost.isPresent()) {
+            Post post = optionalPost.get();
             if (!post.isAvailable()) {
                 throw new CustomException(POST_IS_DELETED);
             }
-
             return getPostResponseDto(post);
         } else {
             throw new CustomException(RESOURCE_NOT_FOUND);
@@ -56,59 +56,47 @@ public class PostService {
     }
 
     private PostResponseDto getPostResponseDto(Post post) {
-        List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
-
-        List<Comment> comments = post.getComments();
+        List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
+        List<Comment> comments = commentService.findComments(post.getId());
         for (Comment comment : comments) {
-            if (comment.isAvailable()) {
-                CommentResponseDto commentResponseDto = new CommentResponseDto(comment);
-                commentResponseDto.setHearts(heartService.getCommentHeartCount);
-                commentResponseDtos.add(commentResponseDto);
-            }
+            CommentResponseDto commentResponseDto = new CommentResponseDto(comment);
+            commentResponseDto.setHearts(heartService.getCommentHeartCount(comment));
+            commentResponseDtoList.add(commentResponseDto);
         }
-        PostResponseDto responseDto = new PostResponseDto(post, commentResponseDtos);
+        PostResponseDto responseDto = new PostResponseDto(post, commentResponseDtoList);
         responseDto.setHearts(heartService.getPostHeartCount(post));
         return responseDto;
     }
 
     @Transactional
     public void createPost(String title, String content, UserDetailsImpl userDetails) {
-
-        Optional<User> foundAuthor = userRepository.findByUsername(userDetails.getUsername());
-        if (!foundAuthor.isPresent()) {
-            throw new CustomException(MEMBER_NOT_FOUND);
-        }
-
-        User author = foundAuthor.get();
+        User author = userService.findUser(userDetails.getUsername());
         Post post = new Post(title, content, author);
         postRepository.save(post);
     }
 
     @Transactional
-    public void editPost(long id, PostRequestDto requestDto, UserDetailsImpl userDetails) {
-        Optional<Post> foundPost = postRepository.findPostById(id);
-        if (!foundPost.isPresent()) {
-            throw new CustomException(RESOURCE_NOT_FOUND);
-        }
+    public void editPost(Long id, PostRequestDto requestDto, UserDetailsImpl userDetails) {
+        User author = userService.findUser(userDetails.getUsername());
+        Post post = getPost(id);
 
-        Optional<User> foundAuthor = userRepository.findByUsername(userDetails.getUsername());
-        if (!foundAuthor.isPresent()) {
-            throw new CustomException(MEMBER_NOT_FOUND);
-        }
-        Post post = foundPost.get();
-        User author = foundAuthor.get();
-
+        // 수정은 오직 작성자 본인만 가능하다.
         if (post.getAuthor().getUsername().equals(author.getUsername())) {
+
+
             String title = requestDto.getTitle();
             String content = requestDto.getContent();
+            // title과 content 모두 빈 칸이면 예외를 발생시킨다.
             if (title.trim().isEmpty() && content.trim().isEmpty()) {
                 throw new CustomException(INVALID_EDIT_VALUE);
             }
 
+            // title만 빈 칸이면 원본 내용을 유지한다.
             if (title.trim().isEmpty()) {
                 title = post.getTitle();
             }
 
+            // content만 빈 칸이면 원본 내용을 유지한다.
             if (content.trim().isEmpty()) {
                 content = post.getContent();
             }
@@ -121,43 +109,49 @@ public class PostService {
     }
 
     @Transactional
-    public void deletePost(long id, UserDetailsImpl userDetails) {
-        Optional<Post> foundPost = postRepository.findPostById(id);
-        if (!foundPost.isPresent()) {
-            throw new CustomException(RESOURCE_NOT_FOUND);
-        }
+    public void deletePost(Long id, UserDetailsImpl userDetails) {
+        User author = userService.findUser(userDetails.getUsername());
+        Post post = getPost(id);
 
-        Optional<User> foundAuthor = userRepository.findByUsername(userDetails.getUsername());
-        if (!foundAuthor.isPresent()) {
-            throw new CustomException(MEMBER_NOT_FOUND);
-        }
-        Post post = foundPost.get();
-        User author = foundAuthor.get();
-
-        if (!post.isAvailable()) {
-            throw new CustomException(POST_IS_DELETED);
-        }
-
+        // 삭제는 게시글 작성자 혹은 관리자라면 가능하다.
         if (post.getAuthor().getUsername().equals(author.getUsername()) || author.getRole().equals(UserRoleEnum.ADMIN)) {
             post.delete();
+
+            // 연관된 모든 코멘트도 삭제 처리 한다.
             List<Comment> comments = post.getComments();
             for (Comment comment : comments) {
                 comment.delete();
+
+                // 연관된 코멘트의 모든 좋아요도 삭제 처리 한다.
                 List<Heart> hearts = comment.getHearts();
                 for (Heart heart : hearts) {
                     heart.dislike();
-                    //heartRepository.save(heart);
                 }
-                //commentRepository.save(comment);
             }
+
+            // 연관된 모든 좋아요도 삭제 처리 한다.
             List<Heart> hearts = post.getHearts();
             for (Heart heart : hearts) {
                 heart.dislike();
-                //heartRepository.save(heart);
             }
+
             postRepository.save(post);
         } else {
             throw new CustomException(INVALID_AUTH_TOKEN);
         }
     }
+
+    private Post getPost(Long id) {
+        Optional<Post> foundPost = postRepository.findPostById(id);
+        if (foundPost.isEmpty()) {
+            throw new CustomException(RESOURCE_NOT_FOUND);
+        }
+
+        Post post = foundPost.get();
+        if (!post.isAvailable()) {
+            throw new CustomException(POST_IS_DELETED);
+        }
+        return post;
+    }
+
 }

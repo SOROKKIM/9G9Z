@@ -44,6 +44,26 @@ public class Post extends Timestamped{
         this.available = true;
     }
 
+    public void addHeart(Heart heart) {
+        if (!this.hearts.contains(heart)) {
+            this.hearts.add(heart);
+        }
+
+        if (heart.getPost() != this) {
+            heart.setPost(this);
+        }
+    }
+
+    public void addComment(Comment comment) {
+        if (!this.comments.contains(comment)) {
+            this.comments.add(comment);
+        }
+
+        if (comment.getPost() != this) {
+            comment.setPost(this);
+        }
+    }
+
     public void edit(String title, String content) {
         this.title = title;
         this.content = content;

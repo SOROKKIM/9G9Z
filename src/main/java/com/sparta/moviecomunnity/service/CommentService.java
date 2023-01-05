@@ -5,7 +5,6 @@ import com.sparta.moviecomunnity.dto.CommentRequestDto;
 import com.sparta.moviecomunnity.entity.*;
 import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.repository.CommentRepository;
-import com.sparta.moviecomunnity.repository.HeartRepository;
 import com.sparta.moviecomunnity.repository.PostRepository;
 import com.sparta.moviecomunnity.repository.UserRepository;
 import com.sparta.moviecomunnity.security.UserDetailsImpl;
@@ -25,7 +24,6 @@ public class CommentService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
-    private final HeartRepository heartRepository;
 
 
     //댓글 작성
@@ -100,7 +98,11 @@ public class CommentService {
         } else {
             throw new CustomException(INVALID_AUTH_TOKEN);
         }
+    }
 
-
+    @Transactional
+    public List<Comment> findComments(Long id) {
+        // 삭제 처리가 되지 않은 댓글만 찾아 반환한다.
+        return commentRepository.findAllByPostIdAndAvailableTrue(id);
     }
 }
