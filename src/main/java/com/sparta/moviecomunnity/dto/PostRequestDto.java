@@ -2,22 +2,15 @@ package com.sparta.moviecomunnity.dto;
 
 import lombok.Getter;
 
+import java.util.Objects;
+
 @Getter
 public class PostRequestDto {
-    private String title;
-    private String content;
+    private final String title;
+    private final String content;
 
     public PostRequestDto(String title, String content) {
-        if (title == null) {
-            this.title = "";
-        } else {
-            this.title = title;
-        }
-
-        if (content == null) {
-            this.content = "";
-        } else {
-            this.content = content;
-        }
+        this.title = Objects.requireNonNullElse(title, "");
+        this.content = Objects.requireNonNullElse(content, "");
     }
 }
