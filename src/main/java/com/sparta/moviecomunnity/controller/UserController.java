@@ -59,11 +59,14 @@ public class UserController {
     @PostMapping("/signin")
     public ResponseEntity<ServerResponse> signin(@RequestBody SigninRequestDto signinRequestDto, HttpServletResponse response) {
 
+        
        // 사용자 id 및 비밀번호 확인
-        String create = userService.signin(signinRequestDto);
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, create);
+        String createToken = userService.signin(signinRequestDto);
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, createToken);
 
         return ServerResponse.toResponseEntity(SUCCESS_SIGNIN);
     }
+
+
   }
 

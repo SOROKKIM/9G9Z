@@ -36,18 +36,26 @@ public class UserService {
 
 
     public String signin(SigninRequestDto signinRequestDto) {
+
         String username = signinRequestDto.getUserName();
         String password = signinRequestDto.getPassword();
+
         // 아이디 및 비밀먼호 확인
         User user = userRepository.findByUsername(username).orElseThrow(
                 () -> new CustomException(MEMBER_NOT_FOUND)
         );
 
-        if (!user.getPassword().equals(password) ) {
-            throw new CustomException(INVALID_ID_INFO);
-        } else {
-            String createdToken = jwtUtil.createToken(user.getUsername(),user.getRole());
-            return createdToken;
+        //로그인을 할 수 있는 사용자인지 확인을 한다.
+        if(!user.isUserStatus()){
+            throw new CustomException(MEMBER_IS_UNREGTER);
+        }else {
+            if (!user.getPassword().equals(password) ) {
+                throw new CustomException(INVALID_INFO);
+            } else {
+                String createdToken = jwtUtil.createToken(user.getUsername(),user.getRole());
+                return createdToken;
+            }
         }
+
     }
 }
