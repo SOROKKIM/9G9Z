@@ -29,4 +29,9 @@ public class HeartController {
     public ResponseEntity<ServerResponse> likesComments(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return likeService.updateCommentLikes(commentService.findComment(id), userDetails.getUser());
     }
+    @PatchMapping("/movies/recomments/{id}/likes")
+    public ResponseEntity<ServerResponse> likesRecomments(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return likeService.updateRecommentLikes(id, userDetails.getUser());
+    }
+
 }

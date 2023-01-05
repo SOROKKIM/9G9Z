@@ -6,6 +6,8 @@ import com.sparta.moviecomunnity.entity.Post;
 import com.sparta.moviecomunnity.entity.User;
 import com.sparta.moviecomunnity.exception.ServerResponse;
 import com.sparta.moviecomunnity.repository.HeartRepository;
+import com.sparta.moviecomunnity.exception.CustomException;
+import com.sparta.moviecomunnity.exception.ResponseCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,6 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 @RequiredArgsConstructor
 public class HeartService {
     private final HeartRepository heartRepository;
-
 
     public ResponseEntity<ServerResponse> updatePostLikes(Post post, User user) {
         Optional<Heart> optionalHeart = heartRepository.findHeartByUserAndPost(user, post);
@@ -66,5 +67,21 @@ public class HeartService {
 
     public Integer getCommentHeartCount(Long commentId) {
         return heartRepository.countByCommentIdAndAvailableTrue(commentId);
+    }
+    
+    public ResponseEntity<ServerResponse> updateRecommentLikes(Long id, User user) {
+        Recomment recomment = recommentRepository.findById(id).orElseThrow(
+                () -> new CustomException(MEMBER_NOT_FOUND)
+        );
+
+        Optional<Heart> heart = heartRepository.findHeartByUserAndRecomment(user, recomment);
+        if(heart.isPresent()) {
+            heartRepository.deleteById(heart.get().getId());
+            return ServerResponse.toResponseEntity(SUCCESS_DELETE_LIKE);
+        }
+        else {
+            heartRepository.save(new Heart(user, recomment));
+            return ServerResponse.toResponseEntity(SUCCESS_LIKE);
+        }
     }
 }

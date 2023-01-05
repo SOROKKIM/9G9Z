@@ -1,5 +1,6 @@
 package com.sparta.moviecomunnity.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,6 +25,7 @@ public class Post extends Timestamped{
 
     @ManyToOne
     @JoinColumn(name = "AUTHOR_ID", nullable = false)
+    @JsonIgnore
     private User author;
 
     @OneToMany(mappedBy = "post", fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)

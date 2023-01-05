@@ -24,6 +24,10 @@ public class Heart {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "COMMENT_ID")
     private Comment comment;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "RECOMMENT_ID")
+    private Recomment recomment;
 
     @Column
     private boolean available;
@@ -54,6 +58,11 @@ public class Heart {
 
     public void like() {
         this.available = true;
+    }
+
+    public Heart(User user, Recomment recomment) {
+        this.user = user;
+        this.recomment = recomment;
     }
 }
 
