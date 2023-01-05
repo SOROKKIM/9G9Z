@@ -31,8 +31,7 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<ServerResponse> signup(@RequestBody @Valid SignupRequestDto signupRequestDto, BindingResult bindingResult) {
         // 전달 받은 아이디와 패스워드가 요구되는 패턴과 일치하지 않는 경우 예외처리
-        if (bindingResult.hasErrors()
-        && bindingResult.getAllErrors().stream().findFirst().isPresent()) {
+        if (bindingResult.hasErrors() && bindingResult.getAllErrors().stream().findFirst().isPresent()) {
             ObjectError objectError = bindingResult.getAllErrors().stream().findFirst().get();
             String errorCode = Objects.requireNonNull(objectError.getCodes())[1].split("\\.")[1];
             System.out.println("Signup Pattern Error:" + errorCode);

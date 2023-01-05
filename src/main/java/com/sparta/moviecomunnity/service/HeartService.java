@@ -51,7 +51,9 @@ public class HeartService {
             }
         }
         else {
-            heartRepository.save(new Heart(user, post));
+            Heart heart = new Heart(user);
+            heart.setPost(post);
+            heartRepository.save(heart);
             return ServerResponse.toResponseEntity(SUCCESS_LIKE);
         }
     }
@@ -78,12 +80,18 @@ public class HeartService {
                 return ServerResponse.toResponseEntity(SUCCESS_LIKE);
             }
         } else {
-            heartRepository.save(new Heart(user, comment));
+            Heart heart = new Heart(user);
+            heart.setComment(comment);
+            heartRepository.save(heart);
             return ServerResponse.toResponseEntity(SUCCESS_LIKE);
         }
     }
 
     public Integer getPostHeartCount(Post post) {
-        return heartRepository.countByPost(post);
+        return heartRepository.countByPostAndAvailableTrue(post);
+    }
+
+    public Integer getCommentHeartCount(Comment comment) {
+        return heartRepository.countByCommentAndAvailableTrue(comment);
     }
 }

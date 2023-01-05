@@ -28,16 +28,26 @@ public class Heart {
     @Column
     private boolean available;
 
-    public Heart(User user, Post post) {
+    public Heart(User user) {
         this.user = user;
-        this.post = post;
         this.available = true;
     }
 
-    public Heart(User user, Comment comment) {
-        this.user = user;
+    //편의 메서드
+    public void setComment(Comment comment) {
+        if (this.comment != null) {
+            this.comment.getHearts().remove(this);
+        }
         this.comment = comment;
-        this.available = true;
+        comment.getHearts().add(this);
+    }
+
+    public void setPost(Post post) {
+        if (this.post != null) {
+            this.post.getHearts().remove(this);
+        }
+        this.post = post;
+        post.getHearts().add(this);
     }
 
     public void dislike() {

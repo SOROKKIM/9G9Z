@@ -62,6 +62,7 @@ public class PostService {
         for (Comment comment : comments) {
             if (comment.isAvailable()) {
                 CommentResponseDto commentResponseDto = new CommentResponseDto(comment);
+                commentResponseDto.setHearts(heartService.getCommentHeartCount);
                 commentResponseDtos.add(commentResponseDto);
             }
         }

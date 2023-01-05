@@ -41,7 +41,13 @@ public class Comment extends Timestamped {
         this.available = true;
     }
 
-    // 편의 메서드 추가
+    // 편의 메서드
+    public void addHeart(Heart heart) {
+        this.hearts.add(heart);
+        if (heart.getComment() != this) {
+            heart.setComment(this);
+        }
+    }
 
     public void edit(String content) {
         this.content = content;
