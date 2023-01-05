@@ -22,31 +22,15 @@ public class MyInformationController {
     private final MyInformationService myInformationService;
 
     @DeleteMapping("/my-information/unregister")
-    public ResponseEntity<ServerResponse> unregister(@RequestParam String unregisterUserName, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<ServerResponse> unregister(@RequestParam String unregisterUserName, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         String username = userDetails.getUsername();
         UserRoleEnum role = userDetails.getUser().getRole();
 
-        if(!unregisterUserName.equals(username) && role.equals(UserRoleEnum.USER)){
+        if (!unregisterUserName.equals(username) && role.equals(UserRoleEnum.USER)) {
             throw new CustomException(INVALID_AUTH_TOKEN_ID);
         } else {
             myInformationService.unregister(unregisterUserName);
             return ServerResponse.toResponseEntity(SUCCESS_UNREGISTER);
         }
     }
-
-//
-//    @PreAuthorize("hasRole('ROLE_ADMIN')")
-//    @PostMapping("admin/unregister")
-//    public ResponseEntity<ServerResponse> adminUnregister(@RequestParam String unregisterUserName, @AuthenticationPrincipal UserDetailsImpl userDetails){
-//        myInformationService.unregister(unregisterUserName);
-//        return ServerResponse.toResponseEntity(SUCCESS_UNREGISTER);
-//    }
-//
-//    @PostMapping("/my-information/unregister2")
-//    public ResponseEntity<ServerResponse> userUnregister(@AuthenticationPrincipal UserDetailsImpl userDetails){
-//        String username = userDetails.getUsername();
-//        myInformationService.unregister(username);
-//        return ServerResponse.toResponseEntity(SUCCESS_UNREGISTER);
-//    }
-
 }

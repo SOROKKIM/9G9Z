@@ -42,10 +42,10 @@ public enum ResponseCode {
     INVALID_ADMIN_PASSWORD(BAD_REQUEST, "관리자 가입을 위한 비밀번호가 틀렸습니다."),
 
     // 로그인에 실패하는 경우 (비밀번호가 맞지 않는 경우, 탈퇴한 회원으로 로그인 시도하는 경우)
-    INVALID_SIGNIN_ID(BAD_REQUEST, "아이디에 빈 칸을 입력할 수 없습니다."),
-    INVALID_SIGNIN_PASSWORD(BAD_REQUEST, "비밀번호에 빈 칸을 입력할 수 없습니다."),
+    INVALID_SIGN_IN_ID(BAD_REQUEST, "아이디에 빈 칸을 입력할 수 없습니다."),
+    INVALID_SIGN_IN_PASSWORD(BAD_REQUEST, "비밀번호에 빈 칸을 입력할 수 없습니다."),
     INVALID_PASSWORD(BAD_REQUEST, "비밀번호가 맞지 않습니다"),
-    MEMBER_IS_UNREGTER(BAD_REQUEST, "이미 탈퇴한 회원입니다."),
+    MEMBER_IS_UNREGISTER(BAD_REQUEST, "이미 탈퇴한 회원입니다."),
 
     // 게시글 작성 시 제목에 빈 칸을 입력한 경우
     INVALID_POST_TITLE(BAD_REQUEST, "제목에 빈 칸을 입력할 수 없습니다."),

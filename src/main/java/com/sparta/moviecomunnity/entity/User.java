@@ -1,6 +1,5 @@
 package com.sparta.moviecomunnity.entity;
 
-import com.sparta.moviecomunnity.dto.SignupRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

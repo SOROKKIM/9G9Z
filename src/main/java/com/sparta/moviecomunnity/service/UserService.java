@@ -1,7 +1,7 @@
 package com.sparta.moviecomunnity.service;
 
-import com.sparta.moviecomunnity.dto.SigninRequestDto;
-import com.sparta.moviecomunnity.dto.SignupRequestDto;
+import com.sparta.moviecomunnity.dto.SignInRequestDto;
+import com.sparta.moviecomunnity.dto.SignUpRequestDto;
 import com.sparta.moviecomunnity.entity.User;
 import com.sparta.moviecomunnity.entity.UserRoleEnum;
 import com.sparta.moviecomunnity.exception.CustomException;
@@ -22,7 +22,7 @@ public class UserService {
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public void signup(SignupRequestDto signupRequestDto, UserRoleEnum role) {
+    public void signUp(SignUpRequestDto signupRequestDto, UserRoleEnum role) {
 
         // 회원 중복 확인
         Optional<User> findUserId = userRepository.findByUsername(signupRequestDto.getUsername());
@@ -34,7 +34,7 @@ public class UserService {
     }
 
 
-    public String signin(SigninRequestDto signinRequestDto) {
+    public String signIn(SignInRequestDto signinRequestDto) {
         String username = signinRequestDto.getUsername();
         String password = signinRequestDto.getPassword();
 
@@ -45,7 +45,7 @@ public class UserService {
 
         //로그인을 할 수 있는 사용자인지 확인을 한다.
         if(!user.isUserStatus()){
-            throw new CustomException(MEMBER_IS_UNREGTER);
+            throw new CustomException(MEMBER_IS_UNREGISTER);
         }else {
             if (!user.getPassword().equals(password) ) {
                 throw new CustomException(INVALID_PASSWORD);

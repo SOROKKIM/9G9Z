@@ -1,17 +1,15 @@
 package com.sparta.moviecomunnity.dto;
 
 import com.sparta.moviecomunnity.entity.Comment;
-import com.sparta.moviecomunnity.entity.Heart;
+
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 public class CommentResponseDto {
-    private Long id;
-    private String user;
-    private String content;
+    private final Long id;
+    private final String user;
+    private final String content;
     @Setter
     private int hearts;
 

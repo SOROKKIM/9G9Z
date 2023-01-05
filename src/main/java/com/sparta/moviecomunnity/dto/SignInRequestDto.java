@@ -1,11 +1,11 @@
 package com.sparta.moviecomunnity.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 @Getter
-public class SigninRequestDto {
+@AllArgsConstructor
+public class SignInRequestDto {
 
     private String username;
     private String password;

@@ -8,7 +8,6 @@ import com.sparta.moviecomunnity.entity.*;
 import com.sparta.moviecomunnity.repository.*;
 import com.sparta.moviecomunnity.exception.CustomException;
 
-import com.sparta.moviecomunnity.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -60,15 +59,15 @@ public class PostService {
     }
 
     @Transactional
-    public void createPost(String title, String content, UserDetailsImpl userDetails) {
-        User author = userService.findUser(userDetails.getUsername());
+    public void createPost(String title, String content, String username) {
+        User author = userService.findUser(username);
         Post post = new Post(title, content, author);
         postRepository.save(post);
     }
 
     @Transactional
-    public void editPost(Long id, PostRequestDto requestDto, UserDetailsImpl userDetails) {
-        User author = userService.findUser(userDetails.getUsername());
+    public void editPost(Long id, PostRequestDto requestDto, String username) {
+        User author = userService.findUser(username);
         Post post = findPost(id);
 
         // 수정은 오직 작성자 본인만 가능하다.
@@ -100,8 +99,8 @@ public class PostService {
     }
 
     @Transactional
-    public void deletePost(Long id, UserDetailsImpl userDetails) {
-        User author = userService.findUser(userDetails.getUsername());
+    public void deletePost(Long id, String username) {
+        User author = userService.findUser(username);
         Post post = findPost(id);
 
         // 삭제는 게시글 작성자 혹은 관리자라면 가능하다.

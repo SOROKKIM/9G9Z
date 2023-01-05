@@ -1,7 +1,7 @@
 package com.sparta.moviecomunnity.dto;
 
-import com.sparta.moviecomunnity.entity.Heart;
 import com.sparta.moviecomunnity.entity.Post;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,15 +10,15 @@ import java.util.List;
 
 @Getter
 public class PostResponseDto {
-    private Long id;
-    private String author;
-    private String title;
-    private String content;
+    private final Long id;
+    private final String author;
+    private final String title;
+    private final String content;
     @Setter
     private long hearts;
-    private List<CommentResponseDto> comments;
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
+    private final List<CommentResponseDto> comments;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime modifiedAt;
 
     public PostResponseDto(Post post, List<CommentResponseDto> comments) {
         this.id = post.getId();

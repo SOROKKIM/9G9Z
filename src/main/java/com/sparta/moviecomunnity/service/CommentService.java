@@ -5,7 +5,6 @@ import com.sparta.moviecomunnity.dto.CommentRequestDto;
 import com.sparta.moviecomunnity.entity.*;
 import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.repository.CommentRepository;
-import com.sparta.moviecomunnity.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +23,9 @@ public class CommentService {
 
     //댓글 작성
     @Transactional
-    public void createComment(CommentCreateRequestDto commentRequestDto, UserDetailsImpl userDetails) {
+    public void createComment(CommentCreateRequestDto commentRequestDto, String username) {
         Post post = postService.findPost(commentRequestDto.getPostId());
-        User user = userService.findUser(userDetails.getUsername());
+        User user = userService.findUser(username);
         Comment comment = new Comment(commentRequestDto.getContent(), user);
         comment.setPost(post);
         commentRepository.save(comment);
@@ -34,8 +33,8 @@ public class CommentService {
 
     //댓글 수정
     @Transactional
-    public void editComment(Long id, CommentRequestDto commentRequestDto, UserDetailsImpl userDetails) {
-        User user = userService.findUser(userDetails.getUsername());
+    public void editComment(Long id, CommentRequestDto commentRequestDto, String username) {
+        User user = userService.findUser(username);
         Comment comment = findComment(id);
 
         // 댓글 수정은 작성자 본인만 수행할 수 있다.
@@ -49,8 +48,8 @@ public class CommentService {
 
     //댓글 삭제
     @Transactional
-    public void deleteComment(long id, UserDetailsImpl userDetails) {
-        User user = userService.findUser(userDetails.getUsername());
+    public void deleteComment(long id, String username) {
+        User user = userService.findUser(username);
         Comment comment = findComment(id);
 
         // 댓글 삭제는 작성자 본인과 관리자만 수행할 수 있다
