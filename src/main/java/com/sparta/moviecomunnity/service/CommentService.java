@@ -85,6 +85,10 @@ public class CommentService {
         User user = foundUser.get();
         Comment comment = foundComment.get();
 
+        if (!comment.isAvailable()) {
+            throw new CustomException(COMMENT_IS_DELETED);
+        }
+
         if(user.getUsername().equals(comment.getUser().getUsername()) || user.getRole().equals(UserRoleEnum.ADMIN)) {
             comment.delete();
             List<Heart> hearts = comment.getHearts();

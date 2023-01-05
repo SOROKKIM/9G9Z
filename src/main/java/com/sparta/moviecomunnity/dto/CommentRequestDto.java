@@ -8,4 +8,12 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CommentRequestDto {
     private String content;
+
+    public CommentRequestDto(String content) {
+        if (content == null) {
+            this.content = "";
+        } else {
+            this.content = content;
+        }
+    }
 }

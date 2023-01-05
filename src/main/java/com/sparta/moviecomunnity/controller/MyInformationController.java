@@ -7,10 +7,8 @@ import com.sparta.moviecomunnity.security.UserDetailsImpl;
 import com.sparta.moviecomunnity.service.MyInformationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,27 +17,21 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 
 @RestController
 @RequiredArgsConstructor
-public class myInformationController {
+public class MyInformationController {
 
     private final MyInformationService myInformationService;
 
-    @PostMapping("/my-information/unregister")
+    @DeleteMapping("/my-information/unregister")
     public ResponseEntity<ServerResponse> unregister(@RequestParam String unregisterUserName, @AuthenticationPrincipal UserDetailsImpl userDetails){
-
         String username = userDetails.getUsername();
-
         UserRoleEnum role = userDetails.getUser().getRole();
 
-        if(role.equals(UserRoleEnum.ADMIN)){
+        if(!unregisterUserName.equals(username) && role.equals(UserRoleEnum.USER)){
+            throw new CustomException(INVALID_AUTH_TOKEN_ID);
+        } else {
             myInformationService.unregister(unregisterUserName);
-        }else {
-            if(!unregisterUserName.equals(username)){
-                throw new CustomException(INVALID_AUTH_TOKEN_ID); //에러 "자신의 아이디만 삭제할 수 있습니다."
-            }else {
-                myInformationService.unregister(username);
-            }
+            return ServerResponse.toResponseEntity(SUCCESS_UNREGISTER);
         }
-        return ServerResponse.toResponseEntity(SUCCESS_UNREGISTER);
     }
 
 //
@@ -56,9 +48,5 @@ public class myInformationController {
 //        myInformationService.unregister(username);
 //        return ServerResponse.toResponseEntity(SUCCESS_UNREGISTER);
 //    }
-//
-
-
-
 
 }

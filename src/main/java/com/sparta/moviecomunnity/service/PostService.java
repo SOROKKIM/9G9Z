@@ -7,7 +7,6 @@ import com.sparta.moviecomunnity.entity.*;
 
 import com.sparta.moviecomunnity.repository.*;
 import com.sparta.moviecomunnity.exception.CustomException;
-import com.sparta.moviecomunnity.repository.CommentRepository;
 
 import com.sparta.moviecomunnity.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +26,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
-    private final HeartRepository heartRepository;
+    private final HeartService heartService;
 
     @Transactional(readOnly = true)
     public List<PostResponseDto> getAllPostOrderByCreatedAtAsc() {
@@ -36,17 +34,7 @@ public class PostService {
         List<PostResponseDto> responseDtos = new ArrayList<>();
 
         for (Post post : posts) {
-            User author = post.getAuthor();
-            List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
-            List<Comment> comments = post.getComments();
-            for (Comment comment : comments) {
-                if (comment.isAvailable()) {
-                    CommentResponseDto commentResponseDto = new CommentResponseDto(comment);
-                    commentResponseDtos.add(commentResponseDto);
-                }
-            }
-            PostResponseDto responseDto = new PostResponseDto(post, commentResponseDtos);
-            responseDtos.add(responseDto);
+            responseDtos.add(getPostResponseDto(post));
         }
 
         return responseDtos;
@@ -54,23 +42,32 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PostResponseDto getPostByPostId(long id) {
-        Optional<Post> foundPost = postRepository.findPostByIdAndAvailableTrue(id);
+        Optional<Post> foundPost = postRepository.findPostById(id);
         if (foundPost.isPresent()) {
             Post post = foundPost.get();
-            User author = post.getAuthor();
-            List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
-
-            List<Comment> comments = post.getComments();
-            for (Comment comment : comments) {
-                if (comment.isAvailable()) {
-                    CommentResponseDto commentResponseDto = new CommentResponseDto(comment);
-                    commentResponseDtos.add(commentResponseDto);
-                }
+            if (!post.isAvailable()) {
+                throw new CustomException(POST_IS_DELETED);
             }
-            return new PostResponseDto(post, commentResponseDtos);
+
+            return getPostResponseDto(post);
         } else {
             throw new CustomException(RESOURCE_NOT_FOUND);
         }
+    }
+
+    private PostResponseDto getPostResponseDto(Post post) {
+        List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
+
+        List<Comment> comments = post.getComments();
+        for (Comment comment : comments) {
+            if (comment.isAvailable()) {
+                CommentResponseDto commentResponseDto = new CommentResponseDto(comment);
+                commentResponseDtos.add(commentResponseDto);
+            }
+        }
+        PostResponseDto responseDto = new PostResponseDto(post, commentResponseDtos);
+        responseDto.setHearts(heartService.getPostHeartCount(post));
+        return responseDto;
     }
 
     @Transactional
@@ -100,14 +97,18 @@ public class PostService {
         Post post = foundPost.get();
         User author = foundAuthor.get();
 
-        if (post.getAuthor().getUsername().equals(author.getUsername()) || author.getRole().equals(UserRoleEnum.ADMIN)) {
+        if (post.getAuthor().getUsername().equals(author.getUsername())) {
             String title = requestDto.getTitle();
             String content = requestDto.getContent();
-            if ( title == null || title.trim().isEmpty() ) {
+            if (title.trim().isEmpty() && content.trim().isEmpty()) {
+                throw new CustomException(INVALID_EDIT_VALUE);
+            }
+
+            if (title.trim().isEmpty()) {
                 title = post.getTitle();
             }
 
-            if ( content == null || content.trim().isEmpty() ) {
+            if (content.trim().isEmpty()) {
                 content = post.getContent();
             }
 
@@ -131,6 +132,10 @@ public class PostService {
         }
         Post post = foundPost.get();
         User author = foundAuthor.get();
+
+        if (!post.isAvailable()) {
+            throw new CustomException(POST_IS_DELETED);
+        }
 
         if (post.getAuthor().getUsername().equals(author.getUsername()) || author.getRole().equals(UserRoleEnum.ADMIN)) {
             post.delete();

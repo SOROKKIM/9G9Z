@@ -41,6 +41,8 @@ public class Comment extends Timestamped {
         this.available = true;
     }
 
+    // 편의 메서드 추가
+
     public void edit(String content) {
         this.content = content;
     }

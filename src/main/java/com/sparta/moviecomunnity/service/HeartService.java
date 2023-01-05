@@ -5,7 +5,6 @@ import com.sparta.moviecomunnity.entity.Heart;
 import com.sparta.moviecomunnity.entity.Post;
 import com.sparta.moviecomunnity.entity.User;
 import com.sparta.moviecomunnity.exception.CustomException;
-import com.sparta.moviecomunnity.exception.ResponseCode;
 import com.sparta.moviecomunnity.exception.ServerResponse;
 import com.sparta.moviecomunnity.repository.CommentRepository;
 import com.sparta.moviecomunnity.repository.HeartRepository;
@@ -82,5 +81,9 @@ public class HeartService {
             heartRepository.save(new Heart(user, comment));
             return ServerResponse.toResponseEntity(SUCCESS_LIKE);
         }
+    }
+
+    public Integer getPostHeartCount(Post post) {
+        return heartRepository.countByPost(post);
     }
 }

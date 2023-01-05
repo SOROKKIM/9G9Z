@@ -17,6 +17,8 @@ import com.sparta.moviecomunnity.jwt.JwtUtil;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import java.util.Objects;
+
 import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 
 @RestController
@@ -28,13 +30,16 @@ public class UserController {
 
     @PostMapping("/signup")
     public ResponseEntity<ServerResponse> signup(@RequestBody @Valid SignupRequestDto signupRequestDto, BindingResult bindingResult) {
-        if(bindingResult.hasErrors()) {
+        // 전달 받은 아이디와 패스워드가 요구되는 패턴과 일치하지 않는 경우 예외처리
+        if (bindingResult.hasErrors()
+        && bindingResult.getAllErrors().stream().findFirst().isPresent()) {
             ObjectError objectError = bindingResult.getAllErrors().stream().findFirst().get();
-            System.out.println();
-            if (objectError.getCodes()[1].equals("Pattern.username")) {
-                throw new CustomException(INVALID_PASSWORD_PATTERN);
-            } else if (objectError.getCodes()[1].equals("Pattern.password")) {
+            String errorCode = Objects.requireNonNull(objectError.getCodes())[1].split("\\.")[1];
+            System.out.println("Signup Pattern Error:" + errorCode);
+            if (errorCode.equals("username")) {
                 throw new CustomException(INVALID_ID_PATTERN);
+            } else if (errorCode.equals("password")) {
+                throw new CustomException(INVALID_PASSWORD_PATTERN);
             }
         }
 
@@ -42,12 +47,12 @@ public class UserController {
         UserRoleEnum role = UserRoleEnum.USER;
         if (signupRequestDto.isAdmin()) {
             if (!signupRequestDto.getAdminPassword().equals(ADMIN_PASSWORD)) {
-                throw new CustomException(INVALID_ID_INFO);
+                throw new CustomException(INVALID_ADMIN_PASSWORD);
             }
             role = UserRoleEnum.ADMIN;
         }
 
-        userService.signup(signupRequestDto,role);
+        userService.signup(signupRequestDto, role);
         return ServerResponse.toResponseEntity(SUCCESS_SIGNUP);
     }
 
@@ -59,8 +64,13 @@ public class UserController {
     @PostMapping("/signin")
     public ResponseEntity<ServerResponse> signin(@RequestBody SigninRequestDto signinRequestDto, HttpServletResponse response) {
 
-        
-       // 사용자 id 및 비밀번호 확인
+        if (signinRequestDto.getUsername() == null || signinRequestDto.getUsername().trim().equals("")) {
+            throw new CustomException(INVALID_SIGNIN_ID);
+        } else if (signinRequestDto.getPassword() == null || signinRequestDto.getPassword().trim().equals("")) {
+            throw new CustomException(INVALID_SIGNIN_PASSWORD);
+        }
+
+        // 사용자 id 및 비밀번호 확인
         String createToken = userService.signin(signinRequestDto);
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, createToken);
 
@@ -68,5 +78,5 @@ public class UserController {
     }
 
 
-  }
+}
 

@@ -43,7 +43,9 @@ public class PostController {
         String content = PostRequestDto.getContent();
         if (title.trim().equals("")) {
             throw new CustomException(INVALID_POST_TITLE);
-        } else if (content.trim().equals("")) {
+        }
+
+        if (content.trim().equals("")) {
             throw new CustomException(INVALID_CONTENT);
         }
 
@@ -57,7 +59,6 @@ public class PostController {
         // 게시글 수정
 
         postService.editPost(id, requestDto, userDetails);
-
         return ServerResponse.toResponseEntity(SUCCESS_EDIT);
     }
 

@@ -4,7 +4,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 public class CommentCreateRequestDto extends CommentRequestDto{
     private Long postId;
+
+    public CommentCreateRequestDto(Long postId, String content) {
+
+    }
 }

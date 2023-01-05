@@ -26,18 +26,18 @@ public class UserService {
     public void signup(SignupRequestDto signupRequestDto, UserRoleEnum role) {
 
         // 회원 중복 확인
-        Optional<User> findUserId = userRepository.findByUsername(signupRequestDto.getUserName());
+        Optional<User> findUserId = userRepository.findByUsername(signupRequestDto.getUsername());
         if(findUserId.isPresent()){
-            throw new CustomException(DUPLICATE_RESOURCE);
+            throw new CustomException(DUPLICATE_USER);
         }
-        User user = new User(signupRequestDto.getUserName(), signupRequestDto.getPassword(), role);
+        User user = new User(signupRequestDto.getUsername(), signupRequestDto.getPassword(), role);
         userRepository.save(user);
     }
 
 
     public String signin(SigninRequestDto signinRequestDto) {
 
-        String username = signinRequestDto.getUserName();
+        String username = signinRequestDto.getUsername();
         String password = signinRequestDto.getPassword();
 
         // 아이디 및 비밀먼호 확인
@@ -50,7 +50,7 @@ public class UserService {
             throw new CustomException(MEMBER_IS_UNREGTER);
         }else {
             if (!user.getPassword().equals(password) ) {
-                throw new CustomException(INVALID_INFO);
+                throw new CustomException(INVALID_PASSWORD);
             } else {
                 String createdToken = jwtUtil.createToken(user.getUsername(),user.getRole());
                 return createdToken;
