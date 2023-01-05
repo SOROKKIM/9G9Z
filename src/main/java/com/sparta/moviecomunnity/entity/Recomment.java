@@ -1,5 +1,6 @@
 package com.sparta.moviecomunnity.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,21 +12,21 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 public class Recomment {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
     private String context;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID", nullable = false)
+    @JoinColumn(name = "AUTHOR_ID", nullable = false)
+    @JsonIgnore
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "COMMENT_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Comment comment;
 
-    @OneToMany(mappedBy = "comment", fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "recomment", fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Heart> hearts;
 
     public Recomment(String context, User user, Comment comment) {
@@ -39,13 +40,4 @@ public class Recomment {
         this.context = context;
     }
 
-    @Override
-    public String toString() {
-        return "{ " +
-                "id=" + id +
-                ", context='" + context + '\'' +
-                ", user=" + user.getUsername() +
-                ", board=" + comment.getId() +
-                " }";
-    }
 }

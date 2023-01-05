@@ -1,6 +1,7 @@
 package com.sparta.moviecomunnity.controller;
 
 import com.sparta.moviecomunnity.dto.RecommentRequestDto;
+import com.sparta.moviecomunnity.dto.RecommentResponseDto;
 import com.sparta.moviecomunnity.entity.Recomment;
 import com.sparta.moviecomunnity.entity.User;
 import com.sparta.moviecomunnity.entity.UserRoleEnum;
@@ -22,19 +23,18 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 @RequestMapping("/movies/recomments")
 public class RecommentController {
     private final RecommentService recommentService;
     private final UserRepository userRepository;
     private final RecommentRepository recommentRepository;
 
-    @GetMapping("/")
-    public List<Recomment> getRecomments(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return recommentService.getRecomments(userDetails.getUsername());
+    @GetMapping("")
+    public List<RecommentResponseDto> getRecomments(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return recommentService.getRecomments(userDetails.getUser());
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<ServerResponse> createRecomment(@RequestBody RecommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(
                 () -> new CustomException(MEMBER_NOT_FOUND)
@@ -44,29 +44,11 @@ public class RecommentController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ServerResponse> editRecomment(@PathVariable long id, @RequestBody RecommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        User user = userDetails.getUser();
-        List<Recomment> recomments = recommentRepository.findAllByUser(user);
-        for(Recomment recomment : recomments) {
-            if(recomment.getId() == id) return recommentService.editRecomment(id, requestDto);
-        }
-
-        throw new CustomException(INVALID_AUTH_TOKEN);
+        return recommentService.editRecomment(id, requestDto, userDetails.getUser());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ServerResponse> deleteRecomment(@PathVariable long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        User user = userDetails.getUser();
-        if(user.getRole() == UserRoleEnum.ADMIN) return recommentService.deleteRecomment(id);
-        else {
-            List<Recomment> recomments = recommentRepository.findAllByUser(user);
-            for(Recomment recomment : recomments) {
-                if(recomment.getId() == id) {
-                    log.info("delete : {}", recomment.toString());
-                    return recommentService.deleteRecomment(id);
-                }
-            }
-        }
-
-        throw new CustomException((INVALID_AUTH_TOKEN))
+            return recommentService.deleteRecomment(id, userDetails.getUser());
     }
 }

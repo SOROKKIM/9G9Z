@@ -1,16 +1,10 @@
 package com.sparta.moviecomunnity.service;
 
-import com.sparta.moviecomunnity.entity.Comment;
-import com.sparta.moviecomunnity.entity.Heart;
-import com.sparta.moviecomunnity.entity.Post;
-import com.sparta.moviecomunnity.entity.User;
+import com.sparta.moviecomunnity.entity.*;
 import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.exception.ResponseCode;
 import com.sparta.moviecomunnity.exception.ServerResponse;
-import com.sparta.moviecomunnity.repository.CommentRepository;
-import com.sparta.moviecomunnity.repository.HeartRepository;
-import com.sparta.moviecomunnity.repository.PostRepository;
-import com.sparta.moviecomunnity.repository.UserRepository;
+import com.sparta.moviecomunnity.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,6 +22,7 @@ public class HeartService {
     private final HeartRepository heartRepository;
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final RecommentRepository recommentRepository;
 
     public ResponseEntity<ServerResponse> updatePostLikes(Long postId, String username) {
         User user = userRepository.findByUsername(username).orElseThrow(
@@ -65,6 +60,22 @@ public class HeartService {
         }
         else {
             heartRepository.save(new Heart(user, comment));
+            return ServerResponse.toResponseEntity(SUCCESS_LIKE);
+        }
+    }
+
+    public ResponseEntity<ServerResponse> updateRecommentLikes(Long id, User user) {
+        Recomment recomment = recommentRepository.findById(id).orElseThrow(
+                () -> new CustomException(MEMBER_NOT_FOUND)
+        );
+
+        Optional<Heart> heart = heartRepository.findHeartByUserAndRecomment(user, recomment);
+        if(heart.isPresent()) {
+            heartRepository.deleteById(heart.get().getId());
+            return ServerResponse.toResponseEntity(SUCCESS_DELETE_LIKE);
+        }
+        else {
+            heartRepository.save(new Heart(user, recomment));
             return ServerResponse.toResponseEntity(SUCCESS_LIKE);
         }
     }

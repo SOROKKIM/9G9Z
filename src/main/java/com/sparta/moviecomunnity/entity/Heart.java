@@ -25,6 +25,10 @@ public class Heart {
     @JoinColumn(name = "COMMENT_ID")
     private Comment comment;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "RECOMMENT_ID")
+    private Recomment recomment;
+
     public Heart(User user, Post post) {
         this.user = user;
         this.post = post;
@@ -33,6 +37,11 @@ public class Heart {
     public Heart(User user, Comment comment) {
         this.user = user;
         this.comment = comment;
+    }
+
+    public Heart(User user, Recomment recomment) {
+        this.user = user;
+        this.recomment = recomment;
     }
 }
 
