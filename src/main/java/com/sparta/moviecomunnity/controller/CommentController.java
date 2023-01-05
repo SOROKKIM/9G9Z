@@ -9,7 +9,6 @@ import com.sparta.moviecomunnity.security.UserDetailsImpl;
 import com.sparta.moviecomunnity.service.CommentService;
 
 import com.sparta.moviecomunnity.service.PostService;
-import com.sparta.moviecomunnity.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,7 +25,6 @@ public class CommentController {
     private final PostService postService;
 
     // 댓글 작성
-    @ResponseBody
     @PostMapping("")
     public ResponseEntity<ServerResponse> createComment(@RequestBody CommentCreateRequestDto commentRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         String comment = commentRequestDto.getContent();
@@ -39,7 +37,6 @@ public class CommentController {
     }
 
     // 댓글 수정
-    @ResponseBody
     @PutMapping("/{id}")
     public ResponseEntity<ServerResponse> editComment(@PathVariable Long id, @RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
@@ -54,7 +51,6 @@ public class CommentController {
 
 
     // 댓글 삭제
-    @ResponseBody
     @DeleteMapping("/{id}")
     public ResponseEntity<ServerResponse> deleteComment(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 게시글 삭제

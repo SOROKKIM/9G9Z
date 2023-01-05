@@ -29,7 +29,6 @@ public class PostController {
     private final HeartService heartService;
 
     @GetMapping("")
-    @ResponseBody
     public List<PostResponseDto> getAllPostOrderByCreatedTimeAsc() {
         List<PostResponseDto> postResponseDtoList = postService.getAllPostOrderByCreatedAtAsc();
         for (PostResponseDto postResponseDto : postResponseDtoList) {
@@ -40,7 +39,6 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    @ResponseBody
     public PostResponseDto getPostByPostId(@PathVariable Long id) {
         PostResponseDto postResponseDto = postService.getPostByPostId(id);
         return makePostResponseDto(postResponseDto);
@@ -57,7 +55,6 @@ public class PostController {
     }
 
     @PostMapping("")
-    @ResponseBody
     public ResponseEntity<ServerResponse> createPost(@RequestBody PostRequestDto PostRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 게시글 검증
         String title = PostRequestDto.getTitle();
@@ -75,7 +72,6 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    @ResponseBody
     public ResponseEntity<ServerResponse> editPost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 게시글 수정
         postService.editPost(id, requestDto, userDetails.getUsername());
@@ -83,7 +79,6 @@ public class PostController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseBody
     public ResponseEntity<ServerResponse> deletePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 게시글 삭제
         postService.deletePost(id, userDetails.getUsername(), userDetails.getUser().getRole());
