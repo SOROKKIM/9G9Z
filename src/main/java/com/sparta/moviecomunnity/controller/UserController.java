@@ -56,9 +56,9 @@ public class UserController {
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<ServerResponse> signIn(@RequestBody SignInRequestDto signinRequestDto, HttpServletResponse response) {
-        String username = signinRequestDto.getUsername();
-        String password = signinRequestDto.getPassword();
+    public ResponseEntity<ServerResponse> signIn(@RequestBody SignInRequestDto signInRequestDto, HttpServletResponse response) {
+        String username = signInRequestDto.getUsername();
+        String password = signInRequestDto.getPassword();
 
         if (username == null || username.trim().equals("")) {
             throw new CustomException(INVALID_SIGN_IN_ID);
@@ -67,7 +67,7 @@ public class UserController {
         }
 
         // 사용자 id 및 비밀번호 확인
-        String createToken = userService.signIn(signinRequestDto);
+        String createToken = userService.signIn(signInRequestDto);
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, createToken);
 
         return ServerResponse.toResponseEntity(SUCCESS_SIGNIN);
