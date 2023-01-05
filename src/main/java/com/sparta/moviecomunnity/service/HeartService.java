@@ -38,10 +38,18 @@ public class HeartService {
                 () -> new CustomException(RESOURCE_NOT_FOUND)
         );
 
-        Optional<Heart> heart = heartRepository.findHeartByUserAndPost(user, post);
-        if(heart.isPresent()) {
-            heartRepository.deleteById(heart.get().getId());
-            return ServerResponse.toResponseEntity(SUCCESS_DELETE_LIKE);
+        Optional<Heart> optionalHeart = heartRepository.findHeartByUserAndPost(user, post);
+        if(optionalHeart.isPresent()) {
+            Heart heart = optionalHeart.get();
+            if (heart.isAvailable()) {
+                heart.dislike();
+                heartRepository.save(heart);
+                return ServerResponse.toResponseEntity(SUCCESS_DELETE_LIKE);
+            } else {
+                heart.like();
+                heartRepository.save(heart);
+                return ServerResponse.toResponseEntity(SUCCESS_LIKE);
+            }
         }
         else {
             heartRepository.save(new Heart(user, post));
@@ -58,12 +66,19 @@ public class HeartService {
                 () -> new CustomException(RESOURCE_NOT_FOUND)
         );
 
-        Optional<Heart> heart = heartRepository.findHeartByUserAndComment(user, comment);
-        if(heart.isPresent()) {
-            heartRepository.deleteById(heart.get().getId());
-            return ServerResponse.toResponseEntity(SUCCESS_DELETE_LIKE);
-        }
-        else {
+        Optional<Heart> optionalHeart = heartRepository.findHeartByUserAndComment(user, comment);
+        if(optionalHeart.isPresent()) {
+            Heart heart = optionalHeart.get();
+            if (heart.isAvailable()) {
+                heart.dislike();
+                heartRepository.save(heart);
+                return ServerResponse.toResponseEntity(SUCCESS_DELETE_LIKE);
+            } else {
+                heart.like();
+                heartRepository.save(heart);
+                return ServerResponse.toResponseEntity(SUCCESS_LIKE);
+            }
+        } else {
             heartRepository.save(new Heart(user, comment));
             return ServerResponse.toResponseEntity(SUCCESS_LIKE);
         }

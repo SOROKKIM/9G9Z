@@ -25,14 +25,27 @@ public class Heart {
     @JoinColumn(name = "COMMENT_ID")
     private Comment comment;
 
+    @Column
+    private boolean available;
+
     public Heart(User user, Post post) {
         this.user = user;
         this.post = post;
+        this.available = true;
     }
 
     public Heart(User user, Comment comment) {
         this.user = user;
         this.comment = comment;
+        this.available = true;
+    }
+
+    public void dislike() {
+        this.available = false;
+    }
+
+    public void like() {
+        this.available = true;
     }
 }
 

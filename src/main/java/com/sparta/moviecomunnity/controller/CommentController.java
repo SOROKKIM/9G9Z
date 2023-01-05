@@ -25,7 +25,7 @@ public class CommentController {
     @ResponseBody
     @PostMapping("")
     public ResponseEntity<ServerResponse> createComment(@RequestBody CommentCreateRequestDto commentRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        String comment = commentRequestDto.getCommentContent();
+        String comment = commentRequestDto.getContent();
         if (comment.trim().equals("")) {
             throw new CustomException(INVALID_CONTENT);
         }
@@ -39,7 +39,7 @@ public class CommentController {
     @PutMapping("/{id}")
     public ResponseEntity<ServerResponse> editComment(@PathVariable Long id, @RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        String comment = commentRequestDto.getCommentContent();
+        String comment = commentRequestDto.getContent();
         if (comment.trim().equals("")) {
             throw new CustomException(INVALID_CONTENT);
         }

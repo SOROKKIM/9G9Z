@@ -2,11 +2,9 @@ package com.sparta.moviecomunnity.service;
 
 import com.sparta.moviecomunnity.dto.SigninRequestDto;
 import com.sparta.moviecomunnity.dto.SignupRequestDto;
-import com.sparta.moviecomunnity.dto.SignupResponseDto;
 import com.sparta.moviecomunnity.entity.User;
 import com.sparta.moviecomunnity.entity.UserRoleEnum;
 import com.sparta.moviecomunnity.exception.CustomException;
-import com.sparta.moviecomunnity.exception.UserIdNotExistException;
 import com.sparta.moviecomunnity.jwt.JwtUtil;
 import com.sparta.moviecomunnity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +28,7 @@ public class UserService {
         // 회원 중복 확인
         Optional<User> findUserId = userRepository.findByUsername(signupRequestDto.getUserName());
         if(findUserId.isPresent()){
-            throw new CustomException(INVALID_INFO);
+            throw new CustomException(DUPLICATE_RESOURCE);
         }
         User user = new User(signupRequestDto.getUserName(), signupRequestDto.getPassword(), role);
         userRepository.save(user);
@@ -58,7 +56,6 @@ public class UserService {
                 return createdToken;
             }
         }
-
 
     }
 }

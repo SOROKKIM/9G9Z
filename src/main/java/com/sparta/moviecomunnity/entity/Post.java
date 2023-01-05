@@ -32,17 +32,25 @@ public class Post extends Timestamped{
     @OneToMany(mappedBy = "post", fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Comment> comments;
 
+    @Column
+    private boolean available;
+
     public Post(String title, String content, User author) {
         this.title = title;
         this.content = content;
         this.author = author;
         this.hearts = new ArrayList<>();
         this.comments = new ArrayList<>();
+        this.available = true;
     }
 
-    public void rewrite(String title, String content) {
+    public void edit(String title, String content) {
         this.title = title;
         this.content = content;
         this.modifiedAt = LocalDateTime.now();
+    }
+
+    public void delete() {
+        this.available = false;
     }
 }

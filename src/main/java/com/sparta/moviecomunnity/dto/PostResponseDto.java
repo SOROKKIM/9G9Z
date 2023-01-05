@@ -1,5 +1,6 @@
 package com.sparta.moviecomunnity.dto;
 
+import com.sparta.moviecomunnity.entity.Heart;
 import com.sparta.moviecomunnity.entity.Post;
 import lombok.Getter;
 
@@ -22,7 +23,13 @@ public class PostResponseDto {
         this.author = post.getAuthor().getUsername();
         this.title = post.getTitle();
         this.content = post.getContent();
-        this.hearts = post.getHearts().size();
+        this.hearts = 0;
+        List<Heart> hearts = post.getHearts();
+        for (Heart heart : hearts) {
+            if (heart.isAvailable()) {
+                this.hearts++;
+            }
+        }
         this.comments = comments;
         this.createdAt = post.getCreatedAt();
         this.modifiedAt = post.getModifiedAt();

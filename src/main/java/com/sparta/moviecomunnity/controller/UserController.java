@@ -7,7 +7,10 @@ import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.exception.ServerResponse;
 import com.sparta.moviecomunnity.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import com.sparta.moviecomunnity.jwt.JwtUtil;
 
@@ -24,13 +27,22 @@ public class UserController {
     private static final String ADMIN_PASSWORD = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
     @PostMapping("/signup")
-    public ResponseEntity<ServerResponse> signup(@RequestBody @Valid SignupRequestDto signupRequestDto) {
+    public ResponseEntity<ServerResponse> signup(@RequestBody @Valid SignupRequestDto signupRequestDto, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()) {
+            ObjectError objectError = bindingResult.getAllErrors().stream().findFirst().get();
+            System.out.println();
+            if (objectError.getCodes()[1].equals("Pattern.username")) {
+                throw new CustomException(INVALID_PASSWORD_PATTERN);
+            } else if (objectError.getCodes()[1].equals("Pattern.password")) {
+                throw new CustomException(INVALID_ID_PATTERN);
+            }
+        }
 
         //사용자 role 확인
         UserRoleEnum role = UserRoleEnum.USER;
         if (signupRequestDto.isAdmin()) {
             if (!signupRequestDto.getAdminPassword().equals(ADMIN_PASSWORD)) {
-                throw new CustomException(INVALID_INFO);
+                throw new CustomException(INVALID_ID_INFO);
             }
             role = UserRoleEnum.ADMIN;
         }

@@ -2,13 +2,10 @@ package com.sparta.moviecomunnity.service;
 
 import com.sparta.moviecomunnity.dto.CommentCreateRequestDto;
 import com.sparta.moviecomunnity.dto.CommentRequestDto;
-import com.sparta.moviecomunnity.entity.Comment;
-import com.sparta.moviecomunnity.entity.Post;
-import com.sparta.moviecomunnity.entity.User;
-import com.sparta.moviecomunnity.entity.UserRoleEnum;
+import com.sparta.moviecomunnity.entity.*;
 import com.sparta.moviecomunnity.exception.CustomException;
-import com.sparta.moviecomunnity.jwt.JwtUtil;
 import com.sparta.moviecomunnity.repository.CommentRepository;
+import com.sparta.moviecomunnity.repository.HeartRepository;
 import com.sparta.moviecomunnity.repository.PostRepository;
 import com.sparta.moviecomunnity.repository.UserRepository;
 import com.sparta.moviecomunnity.security.UserDetailsImpl;
@@ -16,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.sparta.moviecomunnity.exception.ResponseCode.*;
@@ -27,7 +25,7 @@ public class CommentService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
-    private final JwtUtil jwtUtil;
+    private final HeartRepository heartRepository;
 
 
     //댓글 작성
@@ -45,7 +43,7 @@ public class CommentService {
 
         Post post = foundPost.get();
         User user = foundAuthor.get();
-        Comment comment = new Comment(post, commentRequestDto.getCommentContent(), user);
+        Comment comment = new Comment(post, commentRequestDto.getContent(), user);
         commentRepository.save(comment);
     }
 
@@ -65,7 +63,7 @@ public class CommentService {
         Comment comment = foundComment.get();
 
         if (user.getUsername().equals(comment.getUser().getUsername())) {
-            comment.edit(commentRequestDto.getCommentContent());
+            comment.edit(commentRequestDto.getContent());
             commentRepository.save(comment);
         } else {
             throw new CustomException(INVALID_AUTH_TOKEN);
@@ -88,7 +86,13 @@ public class CommentService {
         Comment comment = foundComment.get();
 
         if(user.getUsername().equals(comment.getUser().getUsername()) || user.getRole().equals(UserRoleEnum.ADMIN)) {
-            commentRepository.delete(comment);
+            comment.delete();
+            List<Heart> hearts = comment.getHearts();
+            for (Heart heart : hearts) {
+                heart.dislike();
+                //heartRepository.save(heart);
+            }
+            commentRepository.save(comment);
         } else {
             throw new CustomException(INVALID_AUTH_TOKEN);
         }

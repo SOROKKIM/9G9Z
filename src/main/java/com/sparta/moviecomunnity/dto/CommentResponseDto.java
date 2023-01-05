@@ -1,6 +1,7 @@
 package com.sparta.moviecomunnity.dto;
 
 import com.sparta.moviecomunnity.entity.Comment;
+import com.sparta.moviecomunnity.entity.Heart;
 import lombok.Getter;
 
 import java.util.List;
@@ -9,13 +10,19 @@ import java.util.List;
 public class CommentResponseDto {
     private Long id;
     private String user;
-    private String commentContents;
+    private String content;
     private int hearts;
 
-    public CommentResponseDto(Comment comment, int hearts) {
+    public CommentResponseDto(Comment comment) {
         this.id = comment.getId();
         this.user = comment.getUser().getUsername();
-        this.commentContents = comment.getCommentContent();
-        this.hearts = hearts;
+        this.content = comment.getContent();
+        this.hearts = 0;
+        List<Heart> hearts = comment.getHearts();
+        for (Heart heart : hearts) {
+            if (heart.isAvailable()) {
+                this.hearts++;
+            }
+        }
     }
 }

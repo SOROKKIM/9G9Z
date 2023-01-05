@@ -19,5 +19,15 @@ public class ServerResponse {
                         .build()
                 );
     }
+
+    public static ResponseEntity<Object> toResponseObjectEntity(ResponseCode responseCode) {
+        return ResponseEntity
+                .status(responseCode.getHttpStatus())
+                .body(ServerResponse.builder()
+                        .status(responseCode.getHttpStatus().value())
+                        .message(responseCode.getDetail())
+                        .build()
+                );
+    }
 }
 
