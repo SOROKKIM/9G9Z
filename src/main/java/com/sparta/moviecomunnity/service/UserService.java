@@ -44,7 +44,7 @@ public class UserService {
         );
 
         if (!user.getPassword().equals(password) ) {
-            throw new CustomException(INVALID_INFO);
+            throw new CustomException(INVALID_ID_INFO);
         } else {
             String createdToken = jwtUtil.createToken(user.getUsername(),user.getRole());
             return createdToken;

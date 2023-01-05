@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
 import static org.springframework.http.HttpStatus.*;
 
 @Getter
@@ -35,7 +38,18 @@ public enum ResponseCode {
     INVALID_TOKEN(BAD_REQUEST, "토큰이 유효하지 않습니다."),
 
     // 회원가입 시 username과 password의 구성이 알맞지 않을 경우
-    INVALID_INFO(BAD_REQUEST, "아이디 또는 비밀번호를 확인해주세요."),
+//    @Size(min=4,max=10)
+//    @Pattern(regexp ="^[a-z0-9]*$")
+//    private String userName;
+//
+//    // 비밀번호
+//    @Size(min=8,max=15)
+//    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9ㄱ-힣]).+$")
+//    private String password;
+    INVALID_ID_PATTERN(BAD_REQUEST, "아이디는 4글자 이상, 10글자 이하의 소문자와 숫자로 구성해야 합니다."),
+    INVALID_PASSWORD_PATTERN(BAD_REQUEST, "비밀번호는 8글자 이상, 15글자 이하의 알파벳, 숫자, 특수문자를 각 각 하나 이상 포함하여 구성해야 합니다."),
+    INVALID_ID_INFO(BAD_REQUEST, "회원을 찾을 수 없습니다."),
+    INVALID_PASSWORD_INFO(BAD_REQUEST, "비밀번호가 맞지 않습니다"),
 
     // 토큰이 있고, 유효한 토큰이지만 해당 사용자가 작성한 게시글/댓글이 아닌 경우
     INVALID_AUTH_TOKEN(BAD_REQUEST, "작성자만 삭제/수정할 수 있습니다."),
