@@ -26,8 +26,8 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 @Service
 @Slf4j
 public class RecommentService {
-    private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
+    private final UserService userService;
+    private final CommentService commentService;
     private final RecommentRepository recommentRepository;
     private final JwtUtil jwtUtil;
 
@@ -42,7 +42,8 @@ public class RecommentService {
                 allRecomments.stream().forEach(
                         (recomment) -> toRecomments.add(
                                 new RecommentResponseDto(recomment.getId(), recomment.getContext(),
-                                        recomment.getUser().getId(), recomment.getComment().getId(), recomment.getHearts().size())
+                                        recomment.getUser().getId(), recomment.getComment().getId(),
+                                        recomment.getHearts().size())
                         )
                 );
             }
@@ -55,7 +56,8 @@ public class RecommentService {
                 recomments.stream().forEach(
                         (recomment) -> toRecomments.add(
                                 new RecommentResponseDto(recomment.getId(), recomment.getContext(),
-                                        recomment.getUser().getId(), recomment.getComment().getId(), recomment.getHearts().size())
+                                        recomment.getUser().getId(), recomment.getComment().getId(),
+                                        recomment.getHearts().size())
                         )
                 );
             }
@@ -67,13 +69,9 @@ public class RecommentService {
     //대댓글 작성
     @Transactional
     public ResponseEntity<ServerResponse> createRecomment(RecommentRequestDto requestDto, String username) {
-        User user = userRepository.findByUsername(username).orElseThrow(
-                () -> new CustomException(MEMBER_NOT_FOUND)
-        );
+        User user = userService.findUser(username);
 
-        Comment comment = commentRepository.findCommentById(requestDto.getCommentId()).orElseThrow(
-                () -> new CustomException(RESOURCE_NOT_FOUND)
-        );
+        Comment comment = commentService.findComment(requestDto.getCommentId());
 
         Recomment recomment = new Recomment(requestDto.getContext(), user, comment);
         recommentRepository.save(recomment);
@@ -84,7 +82,7 @@ public class RecommentService {
     @Transactional
     public ResponseEntity<ServerResponse> editRecomment(Long id, RecommentRequestDto requestDto, User user) {
         Recomment recomment = recommentRepository.findRecommentById(id).orElseThrow(
-                () -> new CustomException(RESOURCE_NOT_FOUND)
+                () -> new CustomException(RECOMMENT_NOT_FOUND)
         );
 
         List<Recomment> recomments = recommentRepository.findAllByUser(user);
@@ -106,7 +104,7 @@ public class RecommentService {
     @Transactional
     public ResponseEntity<ServerResponse> deleteRecomment(long id, User user) {
         Recomment recomment = recommentRepository.findById(id).orElseThrow(
-                () -> new CustomException(RESOURCE_NOT_FOUND)
+                () -> new CustomException(RECOMMENT_NOT_FOUND)
         );
 
         if(user.getRole() != UserRoleEnum.ADMIN && !recomment.getUser().getUsername().equals(user.getUsername())) {
