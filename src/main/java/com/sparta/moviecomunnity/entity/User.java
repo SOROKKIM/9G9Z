@@ -1,6 +1,5 @@
 package com.sparta.moviecomunnity.entity;
 
-import com.sparta.moviecomunnity.dto.SignupRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,11 +23,17 @@ public class User {
 
     @Column(nullable = false)
     private UserRoleEnum role;
+    @Column(nullable = false)
+    private boolean isUserStatus = true;
 
 
     public User(String username, String password, UserRoleEnum role) {
         this.username = username;
         this.password = password;
         this.role = role;
+    }
+
+    public void modifyUserStatus(boolean userStatus) {
+        isUserStatus = userStatus;
     }
 }

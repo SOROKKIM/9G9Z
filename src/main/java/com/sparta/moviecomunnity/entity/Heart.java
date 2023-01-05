@@ -25,23 +25,37 @@ public class Heart {
     @JoinColumn(name = "COMMENT_ID")
     private Comment comment;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "RECOMMENT_ID")
-    private Recomment recomment;
+    @Column
+    private boolean available;
 
-    public Heart(User user, Post post) {
+    public Heart(User user) {
         this.user = user;
-        this.post = post;
+        this.available = true;
     }
 
-    public Heart(User user, Comment comment) {
-        this.user = user;
-        this.comment = comment;
+    //편의 메서드
+    public void setComment(Comment comment) {
+        if (this.comment != comment) {
+            this.comment.getHearts().remove(this);
+            this.comment = comment;
+            comment.addHeart(this);
+        }
     }
 
-    public Heart(User user, Recomment recomment) {
-        this.user = user;
-        this.recomment = recomment;
+    public void setPost(Post post) {
+        if (this.post != post) {
+            this.post.getHearts().remove(this);
+            this.post = post;
+            post.addHeart(this);
+        }
+    }
+
+    public void dislike() {
+        this.available = false;
+    }
+
+    public void like() {
+        this.available = true;
     }
 }
 

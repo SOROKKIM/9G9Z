@@ -18,7 +18,7 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/movies/posts")
+@RequestMapping("/posts")
 public class PostController {
 
     private final PostService postService;
@@ -43,38 +43,29 @@ public class PostController {
         String content = PostRequestDto.getContent();
         if (title.trim().equals("")) {
             throw new CustomException(INVALID_POST_TITLE);
-        } else if (content.trim().equals("")) {
+        }
+
+        if (content.trim().equals("")) {
             throw new CustomException(INVALID_CONTENT);
         }
 
-        postService.createPost(title, content, userDetails);
+        postService.createPost(title, content, userDetails.getUsername());
         return ServerResponse.toResponseEntity(SUCCESS_CREATE);
     }
 
     @PutMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<ServerResponse> editPost(@PathVariable long id, @RequestBody PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
+    public ResponseEntity<ServerResponse> editPost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 게시글 수정
-        String title = requestDto.getTitle();
-        String content = requestDto.getContent();
-        if (title.trim().equals("")) {
-            throw new CustomException(INVALID_POST_TITLE);
-        } else if (content.trim().equals("")) {
-            throw new CustomException(INVALID_CONTENT);
-        }
-
-        postService.editPost(id, title, content, userDetails);
-
+        postService.editPost(id, requestDto, userDetails.getUsername());
         return ServerResponse.toResponseEntity(SUCCESS_EDIT);
     }
 
     @DeleteMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<ServerResponse> deletePost(@PathVariable long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
+    public ResponseEntity<ServerResponse> deletePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 게시글 삭제
-        postService.deletePost(id, userDetails);
+        postService.deletePost(id, userDetails.getUsername());
         return ServerResponse.toResponseEntity(SUCCESS_DELETE);
     }
 }

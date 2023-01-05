@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 
 @RestController
-@RequestMapping("/movies/comments")
+@RequestMapping("/comments")
 @RequiredArgsConstructor
 public class CommentController {
 
@@ -25,12 +25,12 @@ public class CommentController {
     @ResponseBody
     @PostMapping("")
     public ResponseEntity<ServerResponse> createComment(@RequestBody CommentCreateRequestDto commentRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        String comment = commentRequestDto.getCommentContent();
+        String comment = commentRequestDto.getContent();
         if (comment.trim().equals("")) {
             throw new CustomException(INVALID_CONTENT);
         }
 
-        commentService.createComment(commentRequestDto, userDetails);
+        commentService.createComment(commentRequestDto, userDetails.getUsername());
         return ServerResponse.toResponseEntity(SUCCESS_CREATE);
     }
 
@@ -39,12 +39,12 @@ public class CommentController {
     @PutMapping("/{id}")
     public ResponseEntity<ServerResponse> editComment(@PathVariable Long id, @RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        String comment = commentRequestDto.getCommentContent();
+        String comment = commentRequestDto.getContent();
         if (comment.trim().equals("")) {
             throw new CustomException(INVALID_CONTENT);
         }
 
-        commentService.editComment(id, commentRequestDto, userDetails);
+        commentService.editComment(id, commentRequestDto, userDetails.getUsername());
         return ServerResponse.toResponseEntity(SUCCESS_EDIT);
     }
 
@@ -54,7 +54,7 @@ public class CommentController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ServerResponse> deleteComment(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 게시글 삭제
-        commentService.deleteComment(id, userDetails);
+        commentService.deleteComment(id, userDetails.getUsername());
         return ServerResponse.toResponseEntity(SUCCESS_DELETE);
     }
 

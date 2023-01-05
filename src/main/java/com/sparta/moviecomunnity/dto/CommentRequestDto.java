@@ -1,11 +1,14 @@
 package com.sparta.moviecomunnity.dto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import java.util.Objects;
 
 @Getter
-@NoArgsConstructor
 public class CommentRequestDto {
-    private String commentContent;
+    private final String content;
+
+    public CommentRequestDto(String content) {
+        this.content = Objects.requireNonNullElse(content, "");
+    }
 }
