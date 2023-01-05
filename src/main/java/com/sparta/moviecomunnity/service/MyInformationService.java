@@ -16,7 +16,6 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.MEMBER_NOT_FOUND;
 @Service
 @RequiredArgsConstructor
 public class MyInformationService {
-
     private final UserRepository userRepository;
 
     @Transactional
@@ -32,6 +31,5 @@ public class MyInformationService {
             userRepository.save(user.get());
         }
     }
-
 
 }

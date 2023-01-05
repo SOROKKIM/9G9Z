@@ -18,7 +18,6 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
 

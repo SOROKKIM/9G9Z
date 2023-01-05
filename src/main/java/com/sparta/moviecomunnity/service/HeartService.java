@@ -4,12 +4,8 @@ import com.sparta.moviecomunnity.entity.Comment;
 import com.sparta.moviecomunnity.entity.Heart;
 import com.sparta.moviecomunnity.entity.Post;
 import com.sparta.moviecomunnity.entity.User;
-import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.exception.ServerResponse;
-import com.sparta.moviecomunnity.repository.CommentRepository;
 import com.sparta.moviecomunnity.repository.HeartRepository;
-import com.sparta.moviecomunnity.repository.PostRepository;
-import com.sparta.moviecomunnity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,32 +19,19 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 @Service
 @RequiredArgsConstructor
 public class HeartService {
-    private final UserRepository userRepository;
     private final HeartRepository heartRepository;
-    private final CommentRepository commentRepository;
-    private final PostRepository postRepository;
+    private final UserService userService;
+    private final CommentService commentService;
+    private final PostService postService;
+
 
     public ResponseEntity<ServerResponse> updatePostLikes(Long postId, String username) {
-        User user = userRepository.findByUsername(username).orElseThrow(
-                () -> new CustomException(MEMBER_NOT_FOUND)
-        );
-
-        Post post = postRepository.findPostById(postId).orElseThrow(
-                () -> new CustomException(RESOURCE_NOT_FOUND)
-        );
+        User user = userService.findUser(username);
+        Post post = postService.findPost(postId);
 
         Optional<Heart> optionalHeart = heartRepository.findHeartByUserAndPost(user, post);
         if(optionalHeart.isPresent()) {
-            Heart heart = optionalHeart.get();
-            if (heart.isAvailable()) {
-                heart.dislike();
-                heartRepository.save(heart);
-                return ServerResponse.toResponseEntity(SUCCESS_DELETE_LIKE);
-            } else {
-                heart.like();
-                heartRepository.save(heart);
-                return ServerResponse.toResponseEntity(SUCCESS_LIKE);
-            }
+            return likeOrDislike(optionalHeart.get());
         }
         else {
             Heart heart = new Heart(user);
@@ -59,29 +42,27 @@ public class HeartService {
     }
 
     public ResponseEntity<ServerResponse> updateCommentLikes(Long commentId, String username) {
-        User user = userRepository.findByUsername(username).orElseThrow(
-                () -> new CustomException(MEMBER_NOT_FOUND)
-        );
-
-        Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new CustomException(RESOURCE_NOT_FOUND)
-        );
+        User user = userService.findUser(username);
+        Comment comment = commentService.findComment(commentId);
 
         Optional<Heart> optionalHeart = heartRepository.findHeartByUserAndComment(user, comment);
         if(optionalHeart.isPresent()) {
-            Heart heart = optionalHeart.get();
-            if (heart.isAvailable()) {
-                heart.dislike();
-                heartRepository.save(heart);
-                return ServerResponse.toResponseEntity(SUCCESS_DELETE_LIKE);
-            } else {
-                heart.like();
-                heartRepository.save(heart);
-                return ServerResponse.toResponseEntity(SUCCESS_LIKE);
-            }
+            return likeOrDislike(optionalHeart.get());
         } else {
             Heart heart = new Heart(user);
             heart.setComment(comment);
+            heartRepository.save(heart);
+            return ServerResponse.toResponseEntity(SUCCESS_LIKE);
+        }
+    }
+
+    private ResponseEntity<ServerResponse> likeOrDislike(Heart heart) {
+        if (heart.isAvailable()) {
+            heart.dislike();
+            heartRepository.save(heart);
+            return ServerResponse.toResponseEntity(SUCCESS_DELETE_LIKE);
+        } else {
+            heart.like();
             heartRepository.save(heart);
             return ServerResponse.toResponseEntity(SUCCESS_LIKE);
         }

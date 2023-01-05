@@ -23,7 +23,6 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 @Service
 @RequiredArgsConstructor
 public class PostService {
-
     private final PostRepository postRepository;
     private final CommentService commentService;
     private final UserService userService;
@@ -43,21 +42,13 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PostResponseDto getPostByPostId(Long id) {
-        Optional<Post> optionalPost = postRepository.findPostById(id);
-        if (optionalPost.isPresent()) {
-            Post post = optionalPost.get();
-            if (!post.isAvailable()) {
-                throw new CustomException(POST_IS_DELETED);
-            }
-            return getPostResponseDto(post);
-        } else {
-            throw new CustomException(RESOURCE_NOT_FOUND);
-        }
+        Post post = findPost(id);
+        return getPostResponseDto(post);
     }
 
     private PostResponseDto getPostResponseDto(Post post) {
         List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
-        List<Comment> comments = commentService.findComments(post.getId());
+        List<Comment> comments = commentService.findCommentsByPostId(post.getId());
         for (Comment comment : comments) {
             CommentResponseDto commentResponseDto = new CommentResponseDto(comment);
             commentResponseDto.setHearts(heartService.getCommentHeartCount(comment));
@@ -78,7 +69,7 @@ public class PostService {
     @Transactional
     public void editPost(Long id, PostRequestDto requestDto, UserDetailsImpl userDetails) {
         User author = userService.findUser(userDetails.getUsername());
-        Post post = getPost(id);
+        Post post = findPost(id);
 
         // 수정은 오직 작성자 본인만 가능하다.
         if (post.getAuthor().getUsername().equals(author.getUsername())) {
@@ -111,7 +102,7 @@ public class PostService {
     @Transactional
     public void deletePost(Long id, UserDetailsImpl userDetails) {
         User author = userService.findUser(userDetails.getUsername());
-        Post post = getPost(id);
+        Post post = findPost(id);
 
         // 삭제는 게시글 작성자 혹은 관리자라면 가능하다.
         if (post.getAuthor().getUsername().equals(author.getUsername()) || author.getRole().equals(UserRoleEnum.ADMIN)) {
@@ -141,16 +132,17 @@ public class PostService {
         }
     }
 
-    private Post getPost(Long id) {
+    public Post findPost(Long id) {
         Optional<Post> foundPost = postRepository.findPostById(id);
         if (foundPost.isEmpty()) {
-            throw new CustomException(RESOURCE_NOT_FOUND);
+            throw new CustomException(POST_NOT_FOUND);
         }
 
         Post post = foundPost.get();
         if (!post.isAvailable()) {
             throw new CustomException(POST_IS_DELETED);
         }
+
         return post;
     }
 

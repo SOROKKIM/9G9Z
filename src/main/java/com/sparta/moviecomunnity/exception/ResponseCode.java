@@ -68,7 +68,8 @@ public enum ResponseCode {
     // 로그인 시, 회원을 찾을 수 없는 경우
     MEMBER_NOT_FOUND(NOT_FOUND, "회원을 찾을 수 없습니다."),
     // 리소스를 찾을 수 없는 경우
-    RESOURCE_NOT_FOUND(NOT_FOUND, "리소스를 찾을 수 없습니다."),
+    POST_NOT_FOUND(NOT_FOUND, "리소스를 찾을 수 없습니다."),
+    COMMENT_NOT_FOUND(NOT_FOUND, "리소스를 찾을 수 없습니다."),
 
     /* 409 CONFLICT : Resource의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
     // DB에 이미 존재하는 username으로 회원가입을 요청한 경우
