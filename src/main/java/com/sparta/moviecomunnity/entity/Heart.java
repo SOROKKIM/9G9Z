@@ -14,25 +14,57 @@ public class Heart {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "POST_ID")
+    @JoinColumn
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "COMMENT_ID")
+    @JoinColumn
     private Comment comment;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private Recomment recomment;
 
-    public Heart(User user, Post post) {
+    @Column
+    private boolean isLike;
+
+    public Heart(User user) {
         this.user = user;
-        this.post = post;
+        this.isLike = true;
     }
 
-    public Heart(User user, Comment comment) {
-        this.user = user;
-        this.comment = comment;
+    //편의 메서드
+    public void setRecomment(Recomment recomment) {
+        if (this.recomment != recomment) {
+            this.recomment = recomment;
+            recomment.addHeart(this);
+        }
+    }
+
+    public void setComment(Comment comment) {
+        if (this.comment != comment) {
+            this.comment = comment;
+            comment.addHeart(this);
+        }
+    }
+
+    public void setPost(Post post) {
+        if (this.post != post) {
+            this.post = post;
+            post.addHeart(this);
+        }
+    }
+
+    public void dislike() {
+        this.isLike = false;
+    }
+
+    public void like() {
+        this.isLike = true;
     }
 }
 

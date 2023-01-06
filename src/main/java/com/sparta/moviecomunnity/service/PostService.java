@@ -1,17 +1,12 @@
 package com.sparta.moviecomunnity.service;
 
-import com.sparta.moviecomunnity.dto.CommentResponseDto;
+import com.sparta.moviecomunnity.dto.PostRequestDto;
 import com.sparta.moviecomunnity.dto.PostResponseDto;
-import com.sparta.moviecomunnity.entity.Comment;
-import com.sparta.moviecomunnity.entity.Post;
-import com.sparta.moviecomunnity.entity.User;
+import com.sparta.moviecomunnity.entity.*;
 
-import com.sparta.moviecomunnity.entity.UserRoleEnum;
 import com.sparta.moviecomunnity.repository.*;
 import com.sparta.moviecomunnity.exception.CustomException;
-import com.sparta.moviecomunnity.repository.CommentRepository;
 
-import com.sparta.moviecomunnity.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -26,102 +21,99 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 @Service
 @RequiredArgsConstructor
 public class PostService {
-
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
-    private final HeartRepository heartRepository;
 
     @Transactional(readOnly = true)
     public List<PostResponseDto> getAllPostOrderByCreatedAtAsc() {
-        List<Post> posts = postRepository.findAll(Sort.by(Sort.Direction.ASC, "CreatedAt"));
-        List<PostResponseDto> responseDtos = new ArrayList<>();
-
+        List<PostResponseDto> postResponseDtoList = new ArrayList<>();
+        List<Post> posts = postRepository.findAllByAvailableTrue(Sort.by(Sort.Direction.ASC, "CreatedAt"));
         for (Post post : posts) {
-            User author = post.getAuthor();
-            List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
-            List<Comment> comments = post.getComments();
-            for (Comment comment : comments) {
-                CommentResponseDto commentResponseDto = new CommentResponseDto(comment, 0);
-                commentResponseDtos.add(commentResponseDto);
-            }
-            PostResponseDto responseDto = new PostResponseDto(post, commentResponseDtos);
-            responseDtos.add(responseDto);
+            postResponseDtoList.add(new PostResponseDto(post));
         }
-
-        return responseDtos;
+        return postResponseDtoList;
     }
 
     @Transactional(readOnly = true)
-    public PostResponseDto getPostByPostId(long id) {
-        Optional<Post> foundPost = postRepository.findPostById(id);
-        if (foundPost.isPresent()) {
-            Post post = foundPost.get();
-            User author = post.getAuthor();
-            List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
-
-            List<Comment> comments = post.getComments();
-            for (Comment comment : comments) {
-                CommentResponseDto commentResponseDto = new CommentResponseDto(comment, 0);
-                commentResponseDtos.add(commentResponseDto);
-            }
-            return new PostResponseDto(post, commentResponseDtos);
-        } else {
-            throw new CustomException(RESOURCE_NOT_FOUND);
-        }
+    public PostResponseDto getPostByPostId(Long id) {
+        Post post = findPost(id);
+        return new PostResponseDto(post);
     }
 
     @Transactional
-    public void createPost(String title, String content, UserDetailsImpl userDetails) {
-
-        Optional<User> foundAuthor = userRepository.findByUsername(userDetails.getUsername());
-        if (!foundAuthor.isPresent()) {
-            throw new CustomException(MEMBER_NOT_FOUND);
-        }
-
-        User author = foundAuthor.get();
+    public void createPost(String title, String content, User author) {
         Post post = new Post(title, content, author);
         postRepository.save(post);
     }
 
     @Transactional
-    public void editPost(long id, String title, String content, UserDetailsImpl userDetails) {
-        Optional<Post> foundPost = postRepository.findPostById(id);
-        if (!foundPost.isPresent()) {
-            throw new CustomException(RESOURCE_NOT_FOUND);
-        }
+    public void editPost(Long id, PostRequestDto requestDto, String username) {
+        Post post = findPost(id);
 
-        Optional<User> foundAuthor = userRepository.findByUsername(userDetails.getUsername());
-        if (!foundAuthor.isPresent()) {
-            throw new CustomException(MEMBER_NOT_FOUND);
-        }
-        Post post = foundPost.get();
-        User author = foundAuthor.get();
+        // 수정은 오직 작성자 본인만 가능하다.
+        if (post.getAuthor().getUsername().equals(username)) {
 
-        if (!post.getAuthor().getUsername().equals(author.getUsername()) && !author.getRole().equals(UserRoleEnum.ADMIN)) {
+            String title = requestDto.getTitle();
+            String content = requestDto.getContent();
+            // 제목과 내용 모두 빈 칸이면 예외를 발생시킨다.
+            if (title.trim().isEmpty() && content.trim().isEmpty()) {
+                throw new CustomException(INVALID_EDIT_VALUE);
+            }
+
+            // 제목만 빈 칸이면 원본 내용을 유지한다.
+            if (title.trim().isEmpty()) {
+                title = post.getTitle();
+            }
+
+            // 제목만 빈 칸이면 원본 내용을 유지한다.
+            if (content.trim().isEmpty()) {
+                content = post.getContent();
+            }
+
+            post.edit(title, content);
+            postRepository.save(post);
+        } else {
             throw new CustomException(INVALID_AUTH_TOKEN);
         }
-        post.rewrite(title, content);
-        postRepository.save(post);
     }
 
     @Transactional
-    public void deletePost(long id, UserDetailsImpl userDetails) {
-        Optional<Post> foundPost = postRepository.findPostById(id);
-        if (!foundPost.isPresent()) {
-            throw new CustomException(RESOURCE_NOT_FOUND);
-        }
+    public void deletePost(Long id, String username, UserRoleEnum role) {
+        Post post = findPost(id);
 
-        Optional<User> foundAuthor = userRepository.findByUsername(userDetails.getUsername());
-        if (!foundAuthor.isPresent()) {
-            throw new CustomException(MEMBER_NOT_FOUND);
-        }
-        Post post = foundPost.get();
-        User author = foundAuthor.get();
+        // 삭제는 게시글 작성자 혹은 관리자라면 가능하다.
+        if (post.getAuthor().getUsername().equals(username) || role.equals(UserRoleEnum.ADMIN)) {
+            post.delete();
 
-        if (!post.getAuthor().getUsername().equals(author.getUsername()) && !author.getRole().equals(UserRoleEnum.ADMIN)) {
+            // 연관된 모든 코멘트도 삭제 처리 한다.
+            List<Comment> comments = post.getComments();
+            for (Comment comment : comments) {
+                comment.delete();
+
+                // 연관된 코멘트의 모든 리코멘트도 삭제 처리 한다.
+                List<Recomment> recomments = comment.getRecomments();
+                for (Recomment recomment : recomments) {
+                    recomment.delete();
+                }
+            }
+
+            postRepository.save(post);
+        } else {
             throw new CustomException(INVALID_AUTH_TOKEN);
         }
-        postRepository.delete(post);
     }
+
+    public Post findPost(Long id) {
+        Optional<Post> foundPost = postRepository.findPostById(id);
+        if (foundPost.isEmpty()) {
+            throw new CustomException(POST_NOT_FOUND);
+        }
+
+        Post post = foundPost.get();
+        if (!post.isAvailable()) {
+            throw new CustomException(POST_IS_DELETED);
+        }
+
+        return post;
+    }
+
 }
