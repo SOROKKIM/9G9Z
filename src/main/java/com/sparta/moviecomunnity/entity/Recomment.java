@@ -29,11 +29,25 @@ public class Recomment {
     @OneToMany(mappedBy = "recomment", fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Heart> hearts;
 
-    public Recomment(String context, User user, Comment comment) {
+    public Recomment(String context, User user) {
         this.context = context;
         this.user = user;
-        this.comment = comment;
         this.hearts = new ArrayList<>();
+    }
+
+    public void setComment(Comment comment) {
+        if (this.comment != comment) {
+            this.comment.getRecomments().remove(this);
+            this.comment = comment;
+            comment.addRecomment(this);
+        }
+    }
+
+    public void addHeart(Heart heart) {
+        this.hearts.add(heart);
+        if (heart.getRecomment() != this) {
+            heart.setRecomment(this);
+        }
     }
 
     public void rewrite(String context) {

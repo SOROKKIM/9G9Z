@@ -1,9 +1,7 @@
 package com.sparta.moviecomunnity.service;
 
-import com.sparta.moviecomunnity.entity.Comment;
-import com.sparta.moviecomunnity.entity.Heart;
-import com.sparta.moviecomunnity.entity.Post;
-import com.sparta.moviecomunnity.entity.User;
+import com.sparta.moviecomunnity.entity.*;
+import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.exception.ServerResponse;
 import com.sparta.moviecomunnity.repository.HeartRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +21,7 @@ public class HeartService {
     private final UserService userService;
     private final CommentService commentService;
     private final PostService postService;
-
+    private final RecommentService recommentService;
 
     public ResponseEntity<ServerResponse> updatePostLikes(Long postId, String username) {
         User user = userService.findUser(username);
@@ -55,6 +53,23 @@ public class HeartService {
             return ServerResponse.toResponseEntity(SUCCESS_LIKE);
         }
     }
+
+    public ResponseEntity<ServerResponse> updateRecommentLikes(Long id, User user) {
+        Recomment recomment = recommentService.getRecomment(id);
+
+        Optional<Heart> heart = heartRepository.findHeartByUserAndRecomment(user, recomment);
+        if(heart.isPresent()) {
+            heartRepository.deleteById(heart.get().getId());
+            return ServerResponse.toResponseEntity(SUCCESS_DELETE_LIKE);
+        }
+        else {
+            Heart newHeart = new Heart(user);
+            newHeart.setRecomment(recomment);
+            heartRepository.save(newHeart);
+            return ServerResponse.toResponseEntity(SUCCESS_LIKE);
+        }
+    }
+
 
     private ResponseEntity<ServerResponse> likeOrDislike(Heart heart) {
         if (heart.isAvailable()) {

@@ -28,12 +28,24 @@ public class Heart {
     @Column
     private boolean available;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "RECOMMENT_ID")
+    private Recomment recomment;
+
     public Heart(User user) {
         this.user = user;
         this.available = true;
     }
 
     //편의 메서드
+    public void setRecomment(Recomment recomment) {
+        if(this.recomment != recomment) {
+            this.recomment.getHearts().remove(this);
+            this.recomment = recomment;
+            recomment.addHeart(this);
+        }
+    }
+
     public void setComment(Comment comment) {
         if (this.comment != comment) {
             this.comment.getHearts().remove(this);

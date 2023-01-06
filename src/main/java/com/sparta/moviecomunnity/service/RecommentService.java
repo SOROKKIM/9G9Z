@@ -73,7 +73,8 @@ public class RecommentService {
 
         Comment comment = commentService.findComment(requestDto.getCommentId());
 
-        Recomment recomment = new Recomment(requestDto.getContext(), user, comment);
+        Recomment recomment = new Recomment(requestDto.getContext(), user);
+        recomment.setComment(comment);
         recommentRepository.save(recomment);
         return ServerResponse.toResponseEntity(SUCCESS_CREATE);
     }
@@ -116,5 +117,12 @@ public class RecommentService {
         return ServerResponse.toResponseEntity(SUCCESS_DELETE);
     }
 
+
+    public Recomment getRecomment(Long id) {
+        Recomment recomment = recommentRepository.findById(id).orElseThrow(
+                () -> new CustomException(MEMBER_NOT_FOUND)
+        );
+        return recomment;
+    }
 
 }
