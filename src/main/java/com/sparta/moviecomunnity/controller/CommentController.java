@@ -27,12 +27,12 @@ public class CommentController {
     // 댓글 작성
     @PostMapping("")
     public ResponseEntity<ServerResponse> createComment(@RequestBody CommentCreateRequestDto commentRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        String comment = commentRequestDto.getContent();
-        if (comment.trim().equals("")) {
+        String content = commentRequestDto.getContent();
+        if (content.trim().equals("")) {
             throw new CustomException(INVALID_CONTENT);
         }
         Post post = postService.findPost(commentRequestDto.getPostId());
-        commentService.createComment(commentRequestDto, post, userDetails.getUser());
+        commentService.createComment(content, post, userDetails.getUser());
         return ServerResponse.toResponseEntity(SUCCESS_CREATE);
     }
 
@@ -40,12 +40,12 @@ public class CommentController {
     @PutMapping("/{id}")
     public ResponseEntity<ServerResponse> editComment(@PathVariable Long id, @RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        String comment = commentRequestDto.getContent();
-        if (comment.trim().equals("")) {
+        String content = commentRequestDto.getContent();
+        if (content.trim().equals("")) {
             throw new CustomException(INVALID_CONTENT);
         }
 
-        commentService.editComment(id, commentRequestDto, userDetails.getUsername());
+        commentService.editComment(id, content, userDetails.getUsername());
         return ServerResponse.toResponseEntity(SUCCESS_EDIT);
     }
 

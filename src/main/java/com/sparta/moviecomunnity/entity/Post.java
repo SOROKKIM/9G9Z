@@ -24,7 +24,7 @@ public class Post extends Timestamped{
     private String content;
 
     @ManyToOne
-    @JoinColumn(name = "AUTHOR_ID", nullable = false)
+    @JoinColumn(nullable = false)
     @JsonIgnore
     private User author;
 

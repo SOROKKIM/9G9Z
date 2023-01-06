@@ -1,13 +1,8 @@
 package com.sparta.moviecomunnity.service;
 
-import com.sparta.moviecomunnity.entity.Comment;
-import com.sparta.moviecomunnity.entity.Heart;
-import com.sparta.moviecomunnity.entity.Post;
-import com.sparta.moviecomunnity.entity.User;
+import com.sparta.moviecomunnity.entity.*;
 import com.sparta.moviecomunnity.exception.ServerResponse;
 import com.sparta.moviecomunnity.repository.HeartRepository;
-import com.sparta.moviecomunnity.exception.CustomException;
-import com.sparta.moviecomunnity.exception.ResponseCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -37,7 +32,6 @@ public class HeartService {
     }
 
     public ResponseEntity<ServerResponse> updateCommentLikes(Comment comment, User user) {
-
         Optional<Heart> optionalHeart = heartRepository.findHeartByUserAndComment(user, comment);
         if(optionalHeart.isPresent()) {
             return likeOrDislike(optionalHeart.get());
@@ -50,7 +44,7 @@ public class HeartService {
     }
 
     private ResponseEntity<ServerResponse> likeOrDislike(Heart heart) {
-        if (heart.isAvailable()) {
+        if (heart.isLike()) {
             heart.dislike();
             heartRepository.save(heart);
             return ServerResponse.toResponseEntity(SUCCESS_DELETE_LIKE);
@@ -62,25 +56,25 @@ public class HeartService {
     }
 
     public Integer getPostHeartCount(Long postId) {
-        return heartRepository.countByPostIdAndAvailableTrue(postId);
+        return heartRepository.countByPostIdAndIsLikeTrue(postId);
     }
 
     public Integer getCommentHeartCount(Long commentId) {
-        return heartRepository.countByCommentIdAndAvailableTrue(commentId);
+        return heartRepository.countByCommentIdAndIsLikeTrue(commentId);
+    }
+
+    public Integer getRecommentHeartCount(Long recommentId) {
+        return heartRepository.countByRecommentIdAndIsLikeTrue(recommentId);
     }
     
-    public ResponseEntity<ServerResponse> updateRecommentLikes(Long id, User user) {
-        Recomment recomment = recommentRepository.findById(id).orElseThrow(
-                () -> new CustomException(MEMBER_NOT_FOUND)
-        );
-
-        Optional<Heart> heart = heartRepository.findHeartByUserAndRecomment(user, recomment);
-        if(heart.isPresent()) {
-            heartRepository.deleteById(heart.get().getId());
-            return ServerResponse.toResponseEntity(SUCCESS_DELETE_LIKE);
-        }
-        else {
-            heartRepository.save(new Heart(user, recomment));
+    public ResponseEntity<ServerResponse> updateRecommentLikes(Recomment recomment, User user) {
+        Optional<Heart> optionalHeart = heartRepository.findHeartByUserAndRecomment(user, recomment);
+        if(optionalHeart.isPresent()) {
+            return likeOrDislike(optionalHeart.get());
+        } else {
+            Heart heart = new Heart(user);
+            heart.setRecomment(recomment);
+            heartRepository.save(heart);
             return ServerResponse.toResponseEntity(SUCCESS_LIKE);
         }
     }

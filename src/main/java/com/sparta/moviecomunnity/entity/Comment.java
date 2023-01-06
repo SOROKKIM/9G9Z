@@ -20,23 +20,26 @@ public class Comment extends Timestamped {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "POST_ID")
+    @JoinColumn
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "AUTHOR_ID")
+    @JoinColumn
     private User user;
-
-    @Column
-    private boolean available;
 
     @OneToMany(mappedBy = "comment", fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Heart> hearts;
 
+    @OneToMany(mappedBy = "comment", fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Recomment> recomments;
+
+    @Column
+    private boolean available;
     public Comment(String content, User user) {
         this.content = content;
         this.user = user;
         this.hearts = new ArrayList<>();
+        this.recomments = new ArrayList<>();
         this.available = true;
     }
 
@@ -47,10 +50,24 @@ public class Comment extends Timestamped {
             post.addComment(this);
         }
     }
+
     public void addHeart(Heart heart) {
-        this.hearts.add(heart);
+        if (!this.hearts.contains(heart)) {
+            this.hearts.add(heart);
+        }
+
         if (heart.getComment() != this) {
             heart.setComment(this);
+        }
+    }
+
+    public void addRecomment(Recomment recomment) {
+        if (!this.recomments.contains(recomment)) {
+            this.recomments.add(recomment);
+        }
+
+        if (recomment.getComment() != this) {
+            recomment.setComment(this);
         }
     }
 

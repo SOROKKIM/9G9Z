@@ -58,6 +58,7 @@ public enum ResponseCode {
     // 삭제된 게시글 / 댓글 조회 혹은 다시 삭제 실패
     POST_IS_DELETED(NOT_FOUND, "삭제된 게시글입니다."),
     COMMENT_IS_DELETED(NOT_FOUND, "삭제된 댓글입니다."),
+    RECOMMENT_IS_DELETED(NOT_FOUND, "삭제된 댓글입니다."),
 
     /* 401 UNAUTHORIZED : 인증되지 않은 사용자 */
     // 토큰이 있고, 유효한 토큰이지만 해당 사용자가 작성한 게시글/댓글이 아닌 경우
@@ -68,8 +69,9 @@ public enum ResponseCode {
     // 로그인 시, 회원을 찾을 수 없는 경우
     MEMBER_NOT_FOUND(NOT_FOUND, "회원을 찾을 수 없습니다."),
     // 리소스를 찾을 수 없는 경우
-    POST_NOT_FOUND(NOT_FOUND, "리소스를 찾을 수 없습니다."),
-    COMMENT_NOT_FOUND(NOT_FOUND, "리소스를 찾을 수 없습니다."),
+    POST_NOT_FOUND(NOT_FOUND, "게시글을 찾을 수 없습니다."),
+    COMMENT_NOT_FOUND(NOT_FOUND, "댓글을 찾을 수 없습니다."),
+    RECOMMENT_NOT_FOUND(NOT_FOUND, "답글을 찾을 수 없습니다."),
 
     /* 409 CONFLICT : Resource의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
     // DB에 이미 존재하는 username으로 회원가입을 요청한 경우

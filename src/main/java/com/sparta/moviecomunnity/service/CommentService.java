@@ -1,7 +1,5 @@
 package com.sparta.moviecomunnity.service;
 
-import com.sparta.moviecomunnity.dto.CommentCreateRequestDto;
-import com.sparta.moviecomunnity.dto.CommentRequestDto;
 import com.sparta.moviecomunnity.dto.CommentResponseDto;
 import com.sparta.moviecomunnity.entity.*;
 import com.sparta.moviecomunnity.exception.CustomException;
@@ -23,20 +21,20 @@ public class CommentService {
 
     //댓글 작성
     @Transactional
-    public void createComment(CommentCreateRequestDto commentRequestDto, Post post, User user) {
-        Comment comment = new Comment(commentRequestDto.getContent(), user);
+    public void createComment(String content, Post post, User user) {
+        Comment comment = new Comment(content, user);
         comment.setPost(post);
         commentRepository.save(comment);
     }
 
     //댓글 수정
     @Transactional
-    public void editComment(Long id, CommentRequestDto commentRequestDto, String username) {
+    public void editComment(Long id, String content, String username) {
         Comment comment = findComment(id);
 
         // 댓글 수정은 작성자 본인만 수행할 수 있다.
         if (username.equals(comment.getUser().getUsername())) {
-            comment.edit(commentRequestDto.getContent());
+            comment.edit(content);
             commentRepository.save(comment);
         } else {
             throw new CustomException(INVALID_AUTH_TOKEN);
@@ -52,10 +50,10 @@ public class CommentService {
         if (username.equals(comment.getUser().getUsername()) || role.equals(UserRoleEnum.ADMIN)) {
             comment.delete();
 
-            // 연관된 모든 좋아요도 삭제 처리 한다.
-            List<Heart> hearts = comment.getHearts();
-            for (Heart heart : hearts) {
-                heart.dislike();
+            // 연관된 모든 리코멘트도 삭제 처리 한다.
+            List<Recomment> recomments = comment.getRecomments();
+            for (Recomment recomment : recomments) {
+                recomment.delete();
             }
 
             commentRepository.save(comment);
@@ -64,7 +62,7 @@ public class CommentService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<CommentResponseDto> findCommentsByPostId(Long postId) {
         List<CommentResponseDto> commentResponseDtoList = new ArrayList<>();
         List<Comment> comments = commentRepository.findAllByPostIdAndAvailableTrue(postId);
@@ -76,6 +74,7 @@ public class CommentService {
         return commentResponseDtoList;
     }
 
+    @Transactional(readOnly = true)
     public Comment findComment(Long id) {
         Optional<Comment> optionalComment = commentRepository.findById(id);
         if (optionalComment.isEmpty()) {

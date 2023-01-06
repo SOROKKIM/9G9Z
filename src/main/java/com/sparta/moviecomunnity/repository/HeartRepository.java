@@ -8,8 +8,10 @@ import java.util.Optional;
 public interface HeartRepository extends JpaRepository<Heart, Long> {
     Optional<Heart> findHeartByUserAndPost(User user, Post post);
     Optional<Heart> findHeartByUserAndComment(User user, Comment comment);
-    Integer countByPostIdAndAvailableTrue(Long postId);
+    Integer countByPostIdAndIsLikeTrue(Long postId);
     Optional<Heart> findHeartByUserAndRecomment(User user, Recomment recomment);
 
-    Integer countByCommentIdAndAvailableTrue(Long commentId);
+    Integer countByCommentIdAndIsLikeTrue(Long commentId);
+
+    Integer countByRecommentIdAndIsLikeTrue(Long recommentId);
 }

@@ -2,13 +2,16 @@ package com.sparta.moviecomunnity.repository;
 
 import com.sparta.moviecomunnity.entity.Recomment;
 import com.sparta.moviecomunnity.entity.User;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface RecommentRepository extends JpaRepository<Recomment, Long> {
-    public List<Recomment> findAllByUser(User user);
+    List<Recomment> findAllByAvailableTrue(Sort sort);
 
-    public Optional<Recomment> findRecommentById(Long recommentId);
+    List<Recomment> findAllByUserAndAvailableTrue(User user);
+
+    List<Recomment> findAllByCommentIdAndAvailableTrue(Long commentId);
+
 }

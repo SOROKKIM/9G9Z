@@ -89,17 +89,11 @@ public class PostService {
             for (Comment comment : comments) {
                 comment.delete();
 
-                // 연관된 코멘트의 모든 좋아요도 삭제 처리 한다.
-                List<Heart> hearts = comment.getHearts();
-                for (Heart heart : hearts) {
-                    heart.dislike();
+                // 연관된 코멘트의 모든 리코멘트도 삭제 처리 한다.
+                List<Recomment> recomments = comment.getRecomments();
+                for (Recomment recomment : recomments) {
+                    recomment.delete();
                 }
-            }
-
-            // 연관된 모든 좋아요도 삭제 처리 한다.
-            List<Heart> hearts = post.getHearts();
-            for (Heart heart : hearts) {
-                heart.dislike();
             }
 
             postRepository.save(post);

@@ -5,13 +5,10 @@ import com.sparta.moviecomunnity.dto.RecommentResponseDto;
 import com.sparta.moviecomunnity.entity.*;
 import com.sparta.moviecomunnity.exception.CustomException;
 import com.sparta.moviecomunnity.exception.ServerResponse;
-import com.sparta.moviecomunnity.jwt.JwtUtil;
-import com.sparta.moviecomunnity.repository.CommentRepository;
 import com.sparta.moviecomunnity.repository.RecommentRepository;
-import com.sparta.moviecomunnity.repository.UserRepository;
-import com.sparta.moviecomunnity.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,10 +23,7 @@ import static com.sparta.moviecomunnity.exception.ResponseCode.*;
 @Service
 @Slf4j
 public class RecommentService {
-    private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
     private final RecommentRepository recommentRepository;
-    private final JwtUtil jwtUtil;
 
     // 내가 쓴 대댓글 모아보기
     @Transactional(readOnly = true)
@@ -37,12 +31,12 @@ public class RecommentService {
         List<RecommentResponseDto> toRecomments = new ArrayList<>();
 
         if(user.getRole() == UserRoleEnum.ADMIN) {
-            List<Recomment> allRecomments = recommentRepository.findAll();
+            List<Recomment> allRecomments = recommentRepository.findAllByAvailableTrue(Sort.by(Sort.Direction.ASC, "CreatedAt"));
             if(allRecomments != null) {
-                allRecomments.stream().forEach(
+                allRecomments.forEach(
                         (recomment) -> toRecomments.add(
                                 new RecommentResponseDto(recomment.getId(), recomment.getContext(),
-                                        recomment.getUser().getId(), recomment.getComment().getId(), recomment.getHearts().size())
+                                        recomment.getUser().getId(), recomment.getComment().getId())
                         )
                 );
             }
@@ -50,12 +44,12 @@ public class RecommentService {
 
 //        유저일때
         else {
-            List<Recomment> recomments = recommentRepository.findAllByUser(user);
+            List<Recomment> recomments = recommentRepository.findAllByUserAndAvailableTrue(user);
             if(recomments != null)  {
-                recomments.stream().forEach(
+                recomments.forEach(
                         (recomment) -> toRecomments.add(
                                 new RecommentResponseDto(recomment.getId(), recomment.getContext(),
-                                        recomment.getUser().getId(), recomment.getComment().getId(), recomment.getHearts().size())
+                                        recomment.getUser().getId(), recomment.getComment().getId())
                         )
                 );
             }
@@ -66,37 +60,24 @@ public class RecommentService {
 
     //대댓글 작성
     @Transactional
-    public ResponseEntity<ServerResponse> createRecomment(RecommentRequestDto requestDto, String username) {
-        User user = userRepository.findByUsername(username).orElseThrow(
-                () -> new CustomException(MEMBER_NOT_FOUND)
-        );
-
-        Comment comment = commentRepository.findCommentById(requestDto.getCommentId()).orElseThrow(
-                () -> new CustomException(RESOURCE_NOT_FOUND)
-        );
-
-        Recomment recomment = new Recomment(requestDto.getContext(), user, comment);
+    public ResponseEntity<ServerResponse> createRecomment(RecommentRequestDto requestDto, Comment comment, User user) {
+        Recomment recomment = new Recomment(requestDto.getContext(), user);
+        recomment.setComment(comment);
         recommentRepository.save(recomment);
         return ServerResponse.toResponseEntity(SUCCESS_CREATE);
     }
 
     //대댓글 수정
     @Transactional
-    public ResponseEntity<ServerResponse> editRecomment(Long id, RecommentRequestDto requestDto, User user) {
-        Recomment recomment = recommentRepository.findRecommentById(id).orElseThrow(
-                () -> new CustomException(RESOURCE_NOT_FOUND)
-        );
+    public ResponseEntity<ServerResponse> editRecomment(Long id, String context, String username) {
+        Recomment recomment = findRecomment(id);
 
-        List<Recomment> recomments = recommentRepository.findAllByUser(user);
-        if(recomments == null) {
-            throw new CustomException(INVALID_AUTH_TOKEN);
-        }
-
-        String newContext = requestDto.getContext();
-
-        if ( newContext != null || !newContext.isEmpty() ) {
-            recomment.rewrite(requestDto.getContext());
+        // 대댓글 수정은 작성자 본인만 수행할 수 있다.
+        if (username.equals(recomment.getUser().getUsername())) {
+            recomment.rewrite(context);
             recommentRepository.save(recomment);
+        } else {
+            throw new CustomException(INVALID_AUTH_TOKEN);
         }
 
         return ServerResponse.toResponseEntity(SUCCESS_EDIT);
@@ -104,19 +85,46 @@ public class RecommentService {
 
     //대댓글 삭제
     @Transactional
-    public ResponseEntity<ServerResponse> deleteRecomment(long id, User user) {
-        Recomment recomment = recommentRepository.findById(id).orElseThrow(
-                () -> new CustomException(RESOURCE_NOT_FOUND)
-        );
+    public ResponseEntity<ServerResponse> deleteRecomment(Long id, String username, UserRoleEnum role) {
+        Recomment recomment = findRecomment(id);
 
-        if(user.getRole() != UserRoleEnum.ADMIN && !recomment.getUser().getUsername().equals(user.getUsername())) {
-            throw new CustomException((INVALID_AUTH_TOKEN));
+        // 대댓글 삭제는 작성자 본인과 관리자만 수행할 수 있다
+        if (username.equals(recomment.getUser().getUsername()) || role.equals(UserRoleEnum.ADMIN)) {
+            recomment.delete();
+            recommentRepository.save(recomment);
+        } else {
+            throw new CustomException(INVALID_AUTH_TOKEN);
         }
 
-        log.info("delete : {}", recomment.toString());
-        recommentRepository.deleteById(id);
+        log.info("delete : {}", recomment);
         return ServerResponse.toResponseEntity(SUCCESS_DELETE);
     }
 
+    @Transactional(readOnly = true)
+    public Recomment findRecomment(Long id) {
+        Optional<Recomment> optionalRecomment = recommentRepository.findById(id);
+        if (optionalRecomment.isEmpty()) {
+            throw new CustomException(RECOMMENT_NOT_FOUND);
+        }
+        Recomment recomment = optionalRecomment.get();
 
+        if (!recomment.isAvailable()) {
+            throw new CustomException(RECOMMENT_IS_DELETED);
+        }
+
+        return recomment;
+    }
+
+    @Transactional(readOnly = true)
+    public List<RecommentResponseDto> findRecommentsByCommentId(Long commentId) {
+        List<RecommentResponseDto> recommentResponseDtoList = new ArrayList<>();
+        List<Recomment> recomments = recommentRepository.findAllByCommentIdAndAvailableTrue(commentId);
+        for (Recomment recomment : recomments) {
+            RecommentResponseDto recommentResponseDto = new RecommentResponseDto(recomment.getId(), recomment.getContext(),
+                    recomment.getUser().getId(), recomment.getComment().getId());
+            recommentResponseDtoList.add(recommentResponseDto);
+        }
+        // 삭제 처리가 되지 않은 댓글만 찾아 반환한다.
+        return recommentResponseDtoList;
+    }
 }

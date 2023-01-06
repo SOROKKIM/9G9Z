@@ -2,20 +2,21 @@ package com.sparta.moviecomunnity.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public class RecommentResponseDto {
-    private long recommentId;
-    private String context;
-    private long userId;
-    private long commentId;
-    private long hearts;
+    private final long recommentId;
+    private final String context;
+    private final long userId;
+    private final long commentId;
+    @Setter
+    private int hearts;
 
-    public RecommentResponseDto(long recommentId, String context, long userId, long commentId, long hearts) {
+    public RecommentResponseDto(long recommentId, String context, long userId, long commentId) {
         this.recommentId = recommentId;
         this.context = context;
         this.userId = userId;
         this.commentId = commentId;
-        this.hearts = hearts;
     }
 }

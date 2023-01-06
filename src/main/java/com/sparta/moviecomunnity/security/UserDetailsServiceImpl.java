@@ -2,7 +2,6 @@ package com.sparta.moviecomunnity.security;
 
 import com.sparta.moviecomunnity.entity.User;
 import com.sparta.moviecomunnity.exception.CustomException;
-import com.sparta.moviecomunnity.exception.ResponseCode;
 import com.sparta.moviecomunnity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
